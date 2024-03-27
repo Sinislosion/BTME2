@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
 }
 
-void on_menu_help_select(GtkButton *b)
+void gtk_menu_help_activate(GtkImageMenuItem *imi)
 {
   gtk_widget_show(gtk_help_window);
 }
