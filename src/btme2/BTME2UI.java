@@ -4,19 +4,39 @@
  */
 package btme2;
 
+import java.util.LinkedList;
 import static javax.swing.BorderFactory.createBevelBorder;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author barackobama
  */
-public class BTME2UI extends javax.swing.JFrame {
 
+public class BTME2UI extends javax.swing.JFrame {
+    
+    public static LinkedList<BT_Barrier> MAP_BARRIERS = new LinkedList<>();
+    
+    public int CURRENT_MODE = 2;
+    
+    Graphics g;
+    
     /**
      * Creates new form BTME2UI
      */
     public BTME2UI() {
         initComponents();
+        g = map_view_panel.getGraphics();
+        map_view_panel.paintComponents(g);
+        
     }
 
     /**
@@ -40,11 +60,16 @@ public class BTME2UI extends javax.swing.JFrame {
         jToggleButton9 = new javax.swing.JToggleButton();
         jToggleButton3 = new javax.swing.JToggleButton();
         jToggleButton2 = new javax.swing.JToggleButton();
-        jInternalFrame1 = new javax.swing.JInternalFrame();
+        map_view_panel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         menubar = new javax.swing.JMenuBar();
         file = new javax.swing.JMenu();
         importmap = new javax.swing.JMenuItem();
         exportmap = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        edit = new javax.swing.JMenu();
+        undo = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("B-TRON MAP EDITOR 2");
@@ -63,7 +88,6 @@ public class BTME2UI extends javax.swing.JFrame {
         jPanel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
 
         buttonGroup2.add(jToggleButton7);
-        jToggleButton7.setLabel("");
         jToggleButton7.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton7.setMinimumSize(new java.awt.Dimension(32, 32));
 
@@ -72,17 +96,14 @@ public class BTME2UI extends javax.swing.JFrame {
         jToggleButton1.setMinimumSize(new java.awt.Dimension(32, 32));
 
         buttonGroup2.add(jToggleButton5);
-        jToggleButton5.setLabel("");
         jToggleButton5.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton5.setMinimumSize(new java.awt.Dimension(32, 32));
 
         buttonGroup2.add(jToggleButton4);
-        jToggleButton4.setLabel("");
         jToggleButton4.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton4.setMinimumSize(new java.awt.Dimension(32, 32));
 
         buttonGroup2.add(jToggleButton8);
-        jToggleButton8.setLabel("");
         jToggleButton8.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton8.setMinimumSize(new java.awt.Dimension(32, 32));
 
@@ -90,7 +111,6 @@ public class BTME2UI extends javax.swing.JFrame {
         jToggleButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/delete.png"))); // NOI18N
         jToggleButton6.setBorder(createBevelBorder(0));
         jToggleButton6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jToggleButton6.setLabel("");
         jToggleButton6.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton6.setMinimumSize(new java.awt.Dimension(32, 32));
         jToggleButton6.setPreferredSize(new java.awt.Dimension(32, 32));
@@ -101,7 +121,6 @@ public class BTME2UI extends javax.swing.JFrame {
         });
 
         buttonGroup2.add(jToggleButton9);
-        jToggleButton9.setLabel("");
         jToggleButton9.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton9.setMinimumSize(new java.awt.Dimension(32, 32));
 
@@ -109,10 +128,8 @@ public class BTME2UI extends javax.swing.JFrame {
         jToggleButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/penis.png"))); // NOI18N
         jToggleButton3.setSelected(true);
         jToggleButton3.setBorder(createBevelBorder(0));
-        jToggleButton3.setLabel("");
         jToggleButton3.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton3.setMinimumSize(new java.awt.Dimension(32, 32));
-        jToggleButton3.setOpaque(false);
         jToggleButton3.setPreferredSize(new java.awt.Dimension(32, 32));
         jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -121,7 +138,6 @@ public class BTME2UI extends javax.swing.JFrame {
         });
 
         buttonGroup2.add(jToggleButton2);
-        jToggleButton2.setLabel("");
         jToggleButton2.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton2.setMinimumSize(new java.awt.Dimension(32, 32));
 
@@ -177,31 +193,39 @@ public class BTME2UI extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
 
-        jInternalFrame1.setBorder(createBevelBorder(0));
-        jInternalFrame1.setTitle("B-TRON MAP VIEWER");
-        jInternalFrame1.setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/icon.png"))); // NOI18N
-        jInternalFrame1.setMaximumSize(new java.awt.Dimension(480, 360));
-        jInternalFrame1.setMinimumSize(new java.awt.Dimension(480, 360));
-        jInternalFrame1.setPreferredSize(new java.awt.Dimension(480, 360));
-        jInternalFrame1.setVisible(true);
+        map_view_panel.setBackground(new java.awt.Color(0, 0, 0));
+        map_view_panel.setBorder(createBevelBorder(1));
+        map_view_panel.setForeground(new java.awt.Color(255, 255, 255));
+        map_view_panel.setMaximumSize(new java.awt.Dimension(480, 360));
+        map_view_panel.setMinimumSize(new java.awt.Dimension(480, 360));
+        map_view_panel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                map_view_panelMouseMoved(evt);
+            }
+        });
+        map_view_panel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                map_view_panelMouseExited(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
-        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
-        jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        javax.swing.GroupLayout map_view_panelLayout = new javax.swing.GroupLayout(map_view_panel);
+        map_view_panel.setLayout(map_view_panelLayout);
+        map_view_panelLayout.setHorizontalGroup(
+            map_view_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
         );
-        jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        map_view_panelLayout.setVerticalGroup(
+            map_view_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 360, Short.MAX_VALUE)
         );
 
-        jPanel1.add(jInternalFrame1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 70, -1, -1));
-        try {
-            jInternalFrame1.setIcon(true);
-        } catch (java.beans.PropertyVetoException e1) {
-            e1.printStackTrace();
-        }
+        jPanel1.add(map_view_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 70, -1, -1));
+
+        jLabel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Viewer");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, -1, -1));
 
         menubar.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
         menubar.setName("Menu"); // NOI18N
@@ -209,15 +233,47 @@ public class BTME2UI extends javax.swing.JFrame {
         file.setText("File");
         file.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
 
+        importmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         importmap.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         importmap.setText("Import Map");
         file.add(importmap);
 
+        exportmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         exportmap.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         exportmap.setText("Export Map");
         file.add(exportmap);
 
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem2.setText("Save Map");
+        file.add(jMenuItem2);
+
         menubar.add(file);
+
+        edit.setText("Edit");
+        edit.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+
+        undo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        undo.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        undo.setLabel("Undo");
+        undo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoActionPerformed(evt);
+            }
+        });
+        edit.add(undo);
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem1.setText("Redo");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        edit.add(jMenuItem1);
+
+        menubar.add(edit);
 
         setJMenuBar(menubar);
 
@@ -237,11 +293,40 @@ public class BTME2UI extends javax.swing.JFrame {
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
         System.out.println("PENCIL TOOL SELECTED");        // TODO add your handling code here:
+        CURRENT_MODE = 2;
     }//GEN-LAST:event_jToggleButton3ActionPerformed
 
     private void jToggleButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton6ActionPerformed
-        // TODO add your handling code here:
+        System.out.println("DELETE TOOL SELECTED"); // TODO add your handling code here:
+        CURRENT_MODE = 3;
     }//GEN-LAST:event_jToggleButton6ActionPerformed
+
+    private void undoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_undoActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void map_view_panelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseMoved
+        // TODO add your handling code here:
+        g.setColor(Color.black);
+        g.fillRect(0, 0, 480, 360);
+        
+        if (CURRENT_MODE == 2)
+        {
+            g.setColor(Color.blue);
+            Point mousePosition = map_view_panel.getMousePosition();
+            g.fillRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+        }
+    }//GEN-LAST:event_map_view_panelMouseMoved
+
+    private void map_view_panelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseExited
+        // TODO add your handling code here:
+        g.setColor(Color.black);
+        g.fillRect(0, 0, 480, 360);
+    }//GEN-LAST:event_map_view_panelMouseExited
 
     /**
      * @param args the command line arguments
@@ -269,21 +354,25 @@ public class BTME2UI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(BTME2UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new BTME2UI().setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JMenu edit;
     private javax.swing.JMenuItem exportmap;
     private javax.swing.JMenu file;
     private javax.swing.JMenuItem importmap;
-    private javax.swing.JInternalFrame jInternalFrame1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JToggleButton jToggleButton1;
@@ -295,6 +384,8 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JToggleButton jToggleButton7;
     private javax.swing.JToggleButton jToggleButton8;
     private javax.swing.JToggleButton jToggleButton9;
+    private javax.swing.JPanel map_view_panel;
     private javax.swing.JMenuBar menubar;
+    private javax.swing.JMenuItem undo;
     // End of variables declaration//GEN-END:variables
 }
