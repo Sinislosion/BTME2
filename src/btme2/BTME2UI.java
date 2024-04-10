@@ -4,10 +4,10 @@
  */
 package btme2;
 
+import java.awt.*;
+import javax.swing.*;
 import java.util.LinkedList;
 import static javax.swing.BorderFactory.createBevelBorder;
-import javax.swing.*;
-import java.awt.*;
 
 /**
  *
@@ -25,10 +25,24 @@ public class BTME2UI extends javax.swing.JFrame {
     Cursor amicursor;
     Image cursorimg;
     
+    JFrame choose;
+    
     /**
      * Creates new form BTME2UI
      */
     public BTME2UI() {
+        try {
+                // Set cross-platform Java L&F (also called "Metal")
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            
+        } 
+        catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+           // handle exception
+        }
+        // handle exception
+        // handle exception
+        // handle exception
+        
         initComponents();
         g = map_view_panel.getGraphics();
         map_view_panel.paintComponents(g);
@@ -37,10 +51,12 @@ public class BTME2UI extends javax.swing.JFrame {
         
         cursorimg = new ImageIcon(this.getClass().getResource("/cursor.png")).getImage();
         
+        choose = new ObjectChooser();
         amicursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorimg, new Point(0,0), "Amiga");
         setCursor(amicursor);
         
         this.setIconImage(iconimg);
+        this.setLocationRelativeTo(null);
         
     }
 
@@ -56,15 +72,15 @@ public class BTME2UI extends javax.swing.JFrame {
         buttonGroup2 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        btn_select = new javax.swing.JToggleButton();
+        btn_objects = new javax.swing.JButton();
+        btn_pencil = new javax.swing.JToggleButton();
+        btn_delete = new javax.swing.JToggleButton();
         jToggleButton7 = new javax.swing.JToggleButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
         jToggleButton5 = new javax.swing.JToggleButton();
         jToggleButton4 = new javax.swing.JToggleButton();
         jToggleButton8 = new javax.swing.JToggleButton();
-        jToggleButton6 = new javax.swing.JToggleButton();
         jToggleButton9 = new javax.swing.JToggleButton();
-        jToggleButton3 = new javax.swing.JToggleButton();
-        jToggleButton2 = new javax.swing.JToggleButton();
         map_view_panel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
@@ -99,116 +115,83 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBorder(createBevelBorder(0));
         jPanel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jPanel2.setLayout(new java.awt.GridLayout(3, 3));
+
+        buttonGroup2.add(btn_select);
+        btn_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/select.png"))); // NOI18N
+        btn_select.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_select.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_select.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_select.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_selectMouseClicked(evt);
+            }
+        });
+        jPanel2.add(btn_select);
+
+        btn_objects.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/objects.png"))); // NOI18N
+        buttonGroup2.add(btn_objects);
+        btn_objects.setLabel("");
+        btn_objects.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_objects.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_objects.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_objects.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_objectsMouseClicked(evt);
+            }
+        });
+        jPanel2.add(btn_objects);
+
+        buttonGroup2.add(btn_pencil);
+        btn_pencil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/penis.png"))); // NOI18N
+        btn_pencil.setSelected(true);
+        btn_pencil.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_pencil.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_pencil.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_pencil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_pencilActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_pencil);
+
+        buttonGroup2.add(btn_delete);
+        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/delete.png"))); // NOI18N
+        btn_delete.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_delete.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_delete.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_delete);
 
         buttonGroup2.add(jToggleButton7);
         jToggleButton7.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton7.setMinimumSize(new java.awt.Dimension(32, 32));
-
-        buttonGroup2.add(jToggleButton1);
-        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/select.png"))); // NOI18N
-        jToggleButton1.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton1.setMinimumSize(new java.awt.Dimension(32, 32));
-        jToggleButton1.setPreferredSize(new java.awt.Dimension(32, 32));
-        jToggleButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jToggleButton1MouseClicked(evt);
-            }
-        });
+        jPanel2.add(jToggleButton7);
 
         buttonGroup2.add(jToggleButton5);
         jToggleButton5.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton5.setMinimumSize(new java.awt.Dimension(32, 32));
+        jPanel2.add(jToggleButton5);
 
         buttonGroup2.add(jToggleButton4);
         jToggleButton4.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton4.setMinimumSize(new java.awt.Dimension(32, 32));
+        jPanel2.add(jToggleButton4);
 
         buttonGroup2.add(jToggleButton8);
         jToggleButton8.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton8.setMinimumSize(new java.awt.Dimension(32, 32));
-
-        buttonGroup2.add(jToggleButton6);
-        jToggleButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/delete.png"))); // NOI18N
-        jToggleButton6.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton6.setMinimumSize(new java.awt.Dimension(32, 32));
-        jToggleButton6.setPreferredSize(new java.awt.Dimension(32, 32));
-        jToggleButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton6ActionPerformed(evt);
-            }
-        });
+        jPanel2.add(jToggleButton8);
 
         buttonGroup2.add(jToggleButton9);
         jToggleButton9.setMaximumSize(new java.awt.Dimension(32, 32));
         jToggleButton9.setMinimumSize(new java.awt.Dimension(32, 32));
-
-        buttonGroup2.add(jToggleButton3);
-        jToggleButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/penis.png"))); // NOI18N
-        jToggleButton3.setSelected(true);
-        jToggleButton3.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton3.setMinimumSize(new java.awt.Dimension(32, 32));
-        jToggleButton3.setPreferredSize(new java.awt.Dimension(32, 32));
-        jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton3ActionPerformed(evt);
-            }
-        });
-
-        buttonGroup2.add(jToggleButton2);
-        jToggleButton2.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton2.setMinimumSize(new java.awt.Dimension(32, 32));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jToggleButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jToggleButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jToggleButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jToggleButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jToggleButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jToggleButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jToggleButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jToggleButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jToggleButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        jPanel2.add(jToggleButton9);
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
 
@@ -346,11 +329,28 @@ public class BTME2UI extends javax.swing.JFrame {
         switch (CURRENT_MODE)
         {
             case 2 -> {
-                System.out.println("WALL ADDED");
                 Point mousepoint = map_view_panel.getMousePosition();
-                MAP_BARRIERS.add(new BT_Barrier(mousepoint.x, mousepoint.y, 8, 8, 5));
+                boolean canplace = MAP_BARRIERS.isEmpty();
+                for (int i = 0; i < MAP_BARRIERS.size(); i++)
+                {
+                    BT_Barrier barr = MAP_BARRIERS.get(i);
+                    canplace = (barr.x != (mousepoint.x/8)*8 || barr.y != (mousepoint.y/8)*8);
+                    if (canplace == false) {break;}
+                    
+                }
+                if (canplace == true)
+                {
+                    MAP_BARRIERS.add(new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, 5));
+                    System.out.println("WALL ADDED");
+                }
+                else
+                {
+                    System.out.println("WALL ALREADY EXISTS HERE");
+                }
             }
+
         }
+        draw_barriers();
 
     }//GEN-LAST:event_map_view_panelMousePressed
 
@@ -383,24 +383,30 @@ public class BTME2UI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_map_view_panelMouseMoved
 
-    private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
+    private void btn_pencilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_pencilActionPerformed
         System.out.println("PENCIL TOOL SELECTED");        // TODO add your handling code here:
         CURRENT_MODE = 2;
-    }//GEN-LAST:event_jToggleButton3ActionPerformed
+    }//GEN-LAST:event_btn_pencilActionPerformed
 
-    private void jToggleButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton6ActionPerformed
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
         System.out.println("DELETE TOOL SELECTED"); // TODO add your handling code here:
         CURRENT_MODE = 3;
-    }//GEN-LAST:event_jToggleButton6ActionPerformed
+    }//GEN-LAST:event_btn_deleteActionPerformed
 
-    private void jToggleButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton1MouseClicked
+    private void btn_selectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selectMouseClicked
         System.out.println("SELECT TOOL SELECTED");
         CURRENT_MODE = 0;        // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton1MouseClicked
+    }//GEN-LAST:event_btn_selectMouseClicked
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void btn_objectsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_objectsMouseClicked
+        // TODO add your handling code here:
+        choose.setLocationRelativeTo(null);
+        choose.setVisible(true);
+    }//GEN-LAST:event_btn_objectsMouseClicked
 
     private void draw_barriers()
     {
@@ -408,7 +414,7 @@ public class BTME2UI extends javax.swing.JFrame {
         {
             BT_Barrier barr = MAP_BARRIERS.get(i);
             g.setColor(Color.blue);
-            g.fillRect((barr.x/8)*8, (barr.y/8)*8, barr.width, barr.height);
+            g.fillRect(barr.x, barr.y, barr.width, barr.height);
         }
     }
     
@@ -449,6 +455,10 @@ public class BTME2UI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btn_delete;
+    private javax.swing.JButton btn_objects;
+    private javax.swing.JToggleButton btn_pencil;
+    private javax.swing.JToggleButton btn_select;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JMenu edit;
     private javax.swing.JMenuItem exportmap;
@@ -461,12 +471,8 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton2;
-    private javax.swing.JToggleButton jToggleButton3;
     private javax.swing.JToggleButton jToggleButton4;
     private javax.swing.JToggleButton jToggleButton5;
-    private javax.swing.JToggleButton jToggleButton6;
     private javax.swing.JToggleButton jToggleButton7;
     private javax.swing.JToggleButton jToggleButton8;
     private javax.swing.JToggleButton jToggleButton9;
