@@ -7,6 +7,8 @@ package btme2;
 import java.awt.*;
 import javax.swing.*;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static javax.swing.BorderFactory.createBevelBorder;
 
 /**
@@ -15,6 +17,11 @@ import static javax.swing.BorderFactory.createBevelBorder;
  */
 
 public class BTME2UI extends javax.swing.JFrame {
+    
+    /**
+     *  The name given to the map
+     */
+    public static String MAP_NAME = "PLACE";
     
     public static LinkedList<BT_Barrier> MAP_BARRIERS = new LinkedList<>();
     
@@ -26,34 +33,58 @@ public class BTME2UI extends javax.swing.JFrame {
     Image cursorimg;
     
     JFrame choose;
+    JFrame namechoose;
+    
+    private static BT_Barrier hori_wall_buffer;
     
     /**
      * Creates new form BTME2UI
      */
     public BTME2UI() {
+        // SET THE THEME
         try {
                 // Set cross-platform Java L&F (also called "Metal")
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            
+            UIManager.setLookAndFeel ("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+
         } 
         catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-           // handle exception
+            try {
+                // handle exception
+                UIManager.setLookAndFeel ("javax.swing.plaf.metal.MetalLookAndFeel");
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                try {
+                    // handle exception
+                    UIManager.setLookAndFeel (UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex2) {
+                    Logger.getLogger(BTME2UI.class.getName()).log(Level.SEVERE, null, ex2);
+                }
+            }
         }
-        // handle exception
-        // handle exception
-        // handle exception
+        UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
+        for (UIManager.LookAndFeelInfo look : looks) {
+            System.out.println(look.getClassName());
+        }
         
+        // netbeans sstuff
         initComponents();
+        
+        // i forgot what this does
         g = map_view_panel.getGraphics();
         map_view_panel.paintComponents(g);
+        
+        // set the window icon
         Image iconimg;
         iconimg = new ImageIcon(this.getClass().getResource("/icon.png")).getImage();
         
+        // set the cursor
         cursorimg = new ImageIcon(this.getClass().getResource("/cursor.png")).getImage();
-        
-        choose = new ObjectChooser();
         amicursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorimg, new Point(0,0), "Amiga");
         setCursor(amicursor);
+        
+        // set popup windows
+        choose = new ObjectChooser();
+        namechoose = new NameEntry();
+        
         
         this.setIconImage(iconimg);
         this.setLocationRelativeTo(null);
@@ -70,17 +101,18 @@ public class BTME2UI extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup2 = new javax.swing.ButtonGroup();
+        jMenuItem3 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         btn_select = new javax.swing.JToggleButton();
         btn_objects = new javax.swing.JButton();
         btn_pencil = new javax.swing.JToggleButton();
         btn_delete = new javax.swing.JToggleButton();
-        jToggleButton7 = new javax.swing.JToggleButton();
-        jToggleButton5 = new javax.swing.JToggleButton();
-        jToggleButton4 = new javax.swing.JToggleButton();
-        jToggleButton8 = new javax.swing.JToggleButton();
-        jToggleButton9 = new javax.swing.JToggleButton();
+        btn_move = new javax.swing.JToggleButton();
+        btn_stamp = new javax.swing.JToggleButton();
+        btn_vertline = new javax.swing.JToggleButton();
+        btn_horiline = new javax.swing.JToggleButton();
+        btn_name = new javax.swing.JButton();
         map_view_panel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
@@ -94,6 +126,8 @@ public class BTME2UI extends javax.swing.JFrame {
         undo = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
 
+        jMenuItem3.setText("jMenuItem3");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("B-TRON MAP EDITOR 2");
         setAutoRequestFocus(false);
@@ -104,6 +138,7 @@ public class BTME2UI extends javax.swing.JFrame {
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
         jPanel1.setCursor(amicursor);
         jPanel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
@@ -116,7 +151,7 @@ public class BTME2UI extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
-        jPanel2.setLayout(new java.awt.GridLayout(3, 3));
+        jPanel2.setLayout(new java.awt.GridLayout(1, 1));
 
         buttonGroup2.add(btn_select);
         btn_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/select.png"))); // NOI18N
@@ -132,13 +167,13 @@ public class BTME2UI extends javax.swing.JFrame {
 
         btn_objects.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/objects.png"))); // NOI18N
         buttonGroup2.add(btn_objects);
-        btn_objects.setLabel("");
+        btn_objects.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn_objects.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_objects.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_objects.setPreferredSize(new java.awt.Dimension(32, 32));
-        btn_objects.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btn_objectsMouseClicked(evt);
+        btn_objects.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_objectsActionPerformed(evt);
             }
         });
         jPanel2.add(btn_objects);
@@ -168,32 +203,73 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_delete);
 
-        buttonGroup2.add(jToggleButton7);
-        jToggleButton7.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton7.setMinimumSize(new java.awt.Dimension(32, 32));
-        jPanel2.add(jToggleButton7);
+        buttonGroup2.add(btn_move);
+        btn_move.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/move.png"))); // NOI18N
+        btn_move.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_move.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_move.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_move.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_moveActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_move);
 
-        buttonGroup2.add(jToggleButton5);
-        jToggleButton5.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton5.setMinimumSize(new java.awt.Dimension(32, 32));
-        jPanel2.add(jToggleButton5);
+        buttonGroup2.add(btn_stamp);
+        btn_stamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/stamp.png"))); // NOI18N
+        btn_stamp.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_stamp.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_stamp.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_stamp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_stampActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_stamp);
 
-        buttonGroup2.add(jToggleButton4);
-        jToggleButton4.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton4.setMinimumSize(new java.awt.Dimension(32, 32));
-        jPanel2.add(jToggleButton4);
+        buttonGroup2.add(btn_vertline);
+        btn_vertline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/vert-line.png"))); // NOI18N
+        btn_vertline.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_vertline.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_vertline.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_vertline.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_vertlineActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_vertline);
 
-        buttonGroup2.add(jToggleButton8);
-        jToggleButton8.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton8.setMinimumSize(new java.awt.Dimension(32, 32));
-        jPanel2.add(jToggleButton8);
+        buttonGroup2.add(btn_horiline);
+        btn_horiline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/hori-line.png"))); // NOI18N
+        btn_horiline.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_horiline.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_horiline.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_horiline.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_horilineActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_horiline);
 
-        buttonGroup2.add(jToggleButton9);
-        jToggleButton9.setMaximumSize(new java.awt.Dimension(32, 32));
-        jToggleButton9.setMinimumSize(new java.awt.Dimension(32, 32));
-        jPanel2.add(jToggleButton9);
+        btn_name.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/text.png"))); // NOI18N
+        buttonGroup2.add(btn_name);
+        btn_name.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btn_name.setMaximumSize(new java.awt.Dimension(32, 32));
+        btn_name.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn_name.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_name.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_nameMouseClicked(evt);
+            }
+        });
+        btn_name.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_nameActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_name);
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(312, 30, 288, -1));
 
         map_view_panel.setBackground(new java.awt.Color(0, 0, 0));
         map_view_panel.setForeground(new java.awt.Color(255, 255, 255));
@@ -227,12 +303,13 @@ public class BTME2UI extends javax.swing.JFrame {
             .addGap(0, 360, Short.MAX_VALUE)
         );
 
-        jPanel1.add(map_view_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 70, -1, -1));
+        jPanel1.add(map_view_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 70, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Border Color");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 320, -1, -1));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 450, 110, -1));
 
         jComboBox1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Black", "Red", "Orange", "Yellow", "Green", "Blue", "Violet" }));
@@ -242,12 +319,12 @@ public class BTME2UI extends javax.swing.JFrame {
                 jComboBox1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 340, 100, -1));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 470, 110, -1));
 
         jLabel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Viewer");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, -1, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, -1, -1));
 
         menubar.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
         menubar.setName("Menu"); // NOI18N
@@ -325,23 +402,47 @@ public class BTME2UI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jPanel1MouseEntered
 
+    public boolean canbeplaced()
+    {
+        Point mousepoint = map_view_panel.getMousePosition();
+        boolean canplace = true;
+        for (int i = 0; i < MAP_BARRIERS.size(); i++)
+        {
+            BT_Barrier barr = MAP_BARRIERS.get(i);
+            canplace = (barr.x != (mousepoint.x/8)*8 || barr.y != (mousepoint.y/8)*8);
+            if (canplace == false) {return false;}
+
+        }
+        return true;
+    }
+    
     private void map_view_panelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMousePressed
         switch (CURRENT_MODE)
         {
             case 2 -> {
                 Point mousepoint = map_view_panel.getMousePosition();
-                boolean canplace = MAP_BARRIERS.isEmpty();
-                for (int i = 0; i < MAP_BARRIERS.size(); i++)
-                {
-                    BT_Barrier barr = MAP_BARRIERS.get(i);
-                    canplace = (barr.x != (mousepoint.x/8)*8 || barr.y != (mousepoint.y/8)*8);
-                    if (canplace == false) {break;}
-                    
-                }
+                boolean canplace = canbeplaced();
                 if (canplace == true)
                 {
                     MAP_BARRIERS.add(new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, 5));
                     System.out.println("WALL ADDED");
+                }
+                else
+                {
+                    System.out.println("WALL ALREADY EXISTS HERE");
+                }
+            }
+            
+            case 6 ->
+            {
+                Point mousepoint = map_view_panel.getMousePosition();
+                boolean canplace = canbeplaced();
+                if (canplace == true && hori_wall_buffer == null)
+                {
+                    hori_wall_buffer.x = mousepoint.x;
+                    hori_wall_buffer.y = mousepoint.y;
+                    g.setColor(Color.blue);
+                    g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, mousepoint.x, 8);
                 }
                 else
                 {
@@ -402,11 +503,39 @@ public class BTME2UI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
-    private void btn_objectsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_objectsMouseClicked
-        // TODO add your handling code here:
+    private void btn_objectsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_objectsActionPerformed
         choose.setLocationRelativeTo(null);
         choose.setVisible(true);
-    }//GEN-LAST:event_btn_objectsMouseClicked
+    }//GEN-LAST:event_btn_objectsActionPerformed
+
+    private void btn_nameMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_nameMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_nameMouseClicked
+
+    private void btn_nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nameActionPerformed
+        namechoose.setLocationRelativeTo(null);
+        namechoose.setVisible(true);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_nameActionPerformed
+
+    private void btn_moveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_moveActionPerformed
+        System.out.println("MOVE TOOL SELECTED");
+        CURRENT_MODE = 4;        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_moveActionPerformed
+
+    private void btn_stampActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_stampActionPerformed
+        System.out.println("STAMP TOOL SELECTED");
+        CURRENT_MODE = 5;        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_stampActionPerformed
+
+    private void btn_vertlineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_vertlineActionPerformed
+        System.out.println("VERTICAL LINE TOOL SELECTED");
+        CURRENT_MODE = 6;        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_vertlineActionPerformed
+
+    private void btn_horilineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_horilineActionPerformed
+        System.out.println("HORIZONTAL LINE TOOL SELECTED");
+        CURRENT_MODE = 7;        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_horilineActionPerformed
 
     private void draw_barriers()
     {
@@ -456,9 +585,14 @@ public class BTME2UI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btn_delete;
+    private javax.swing.JToggleButton btn_horiline;
+    private javax.swing.JToggleButton btn_move;
+    private javax.swing.JButton btn_name;
     private javax.swing.JButton btn_objects;
     private javax.swing.JToggleButton btn_pencil;
     private javax.swing.JToggleButton btn_select;
+    private javax.swing.JToggleButton btn_stamp;
+    private javax.swing.JToggleButton btn_vertline;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JMenu edit;
     private javax.swing.JMenuItem exportmap;
@@ -469,13 +603,9 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JToggleButton jToggleButton4;
-    private javax.swing.JToggleButton jToggleButton5;
-    private javax.swing.JToggleButton jToggleButton7;
-    private javax.swing.JToggleButton jToggleButton8;
-    private javax.swing.JToggleButton jToggleButton9;
     private javax.swing.JPanel map_view_panel;
     private javax.swing.JMenuBar menubar;
     private javax.swing.JMenuItem undo;

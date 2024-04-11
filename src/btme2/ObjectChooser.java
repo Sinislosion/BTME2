@@ -73,6 +73,8 @@ public class ObjectChooser extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Choose an Object");
+        setAlwaysOnTop(true);
+        setBackground(new java.awt.Color(102, 102, 102));
         setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         setResizable(false);
 
