@@ -88,6 +88,14 @@ public class NameEntry extends javax.swing.JFrame {
                 mapnameentryActionPerformed(evt);
             }
         });
+        mapnameentry.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                mapnameentryKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                mapnameentryKeyTyped(evt);
+            }
+        });
 
         jButton1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jButton1.setText("Yes!");
@@ -148,12 +156,26 @@ public class NameEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        mapnameentry.setText(BTME2UI.MAP_NAME);
         dispose();        // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void mapnameentryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mapnameentryActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_mapnameentryActionPerformed
+
+    private void mapnameentryKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mapnameentryKeyTyped
+        if (mapnameentry.getText().length() > 15)
+        {
+            String curstring = mapnameentry.getText();
+            curstring = curstring.substring(0, 16);
+            mapnameentry.setText(curstring);
+        }
+    }//GEN-LAST:event_mapnameentryKeyTyped
+
+    private void mapnameentryKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mapnameentryKeyPressed
+        
+    }//GEN-LAST:event_mapnameentryKeyPressed
 
     /**
      * @param args the command line arguments
