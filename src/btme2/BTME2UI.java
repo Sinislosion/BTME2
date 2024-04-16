@@ -527,6 +527,13 @@ public class BTME2UI extends javax.swing.JFrame {
                 Point mousePosition = map_view_panel.getMousePosition();
                 g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
             }
+            
+            case 6 ->
+            {
+                g.setColor(Color.blue);
+                Point mousePosition = map_view_panel.getMousePosition();
+                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+            }
         }
 
     }//GEN-LAST:event_map_view_panelMouseMoved
@@ -611,11 +618,11 @@ public class BTME2UI extends javax.swing.JFrame {
             case 6 ->
             {
                 Point mousepoint = map_view_panel.getMousePosition();
-                hori_wall_buffer.width = (int) (java.lang.Math.ceil((mousepoint.x - hori_wall_buffer.x)/8)*8);
+                hori_wall_buffer.width = 8; //(int) (java.lang.Math.ceil((mousepoint.x - hori_wall_buffer.x)/8)*8);
                 hori_wall_buffer.height = (int) (java.lang.Math.ceil((mousepoint.y - hori_wall_buffer.y)/8)*8);
                 clear_screen();
                 g.setColor(Color.BLUE);
-                g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, hori_wall_buffer.width, hori_wall_buffer.height);
+                g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, 8, hori_wall_buffer.height);
             }
                 
               
@@ -665,7 +672,6 @@ public class BTME2UI extends javax.swing.JFrame {
                 case 5 -> {g.setColor(Color.BLUE);}
                 case 6 -> {g.setColor(Color.magenta);}
             }
-            g.setColor(Color.blue);
             g.fillRect(barr.x, barr.y, barr.width, barr.height);
         }
     }
