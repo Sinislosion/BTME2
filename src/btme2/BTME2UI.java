@@ -5,6 +5,7 @@
 package btme2;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,6 +35,9 @@ public class BTME2UI extends javax.swing.JFrame {
     public int IS_ON_VIEWER = 0;
     
     Graphics g;
+    Graphics mvg;
+    BufferedImage bi;
+
     Cursor amicursor;
     Image cursorimg;
     
@@ -77,8 +81,10 @@ public class BTME2UI extends javax.swing.JFrame {
         initComponents();
         
         // i forgot what this does
-        g = map_view_panel.getGraphics();
-        map_view_panel.paintComponents(g);
+        bi = new BufferedImage(480, 360, BufferedImage.TYPE_INT_RGB);
+        g = bi.createGraphics();
+        mvg = map_view_panel.getGraphics();
+        
         
         // set the window icon
         Image iconimg;
@@ -116,7 +122,6 @@ public class BTME2UI extends javax.swing.JFrame {
     public void decreasealertopacity()
     {
         labeltime--;
-        draw_barriers();
         if (labeltime > 0 || labelopacity == 0) {return;}
         labelopacity--;
         jLabel3.setForeground(new Color (255, 255, 255, labelopacity));
@@ -467,6 +472,7 @@ public class BTME2UI extends javax.swing.JFrame {
     }
     
     private void map_view_panelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMousePressed
+        clear_screen();
         switch (CURRENT_MODE)
         {
             case 2 -> {
@@ -493,27 +499,25 @@ public class BTME2UI extends javax.swing.JFrame {
                     {
                         hori_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, 5);
                     }
-                    g.setColor(Color.blue);
-                    g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, hori_wall_buffer.width, hori_wall_buffer.height);
+                    mvg.setColor(Color.blue);
+                    mvg.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, hori_wall_buffer.width, hori_wall_buffer.height);
                 }
                 else
                 {
                     System.out.println("WALL ALREADY EXISTS HERE");
                 }
             }
-
+            
         }
-
     }//GEN-LAST:event_map_view_panelMousePressed
 
     private void map_view_panelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseExited
         // TODO add your handling code here:
         clear_screen();
-        IS_ON_VIEWER = 0;
     }//GEN-LAST:event_map_view_panelMouseExited
 
     private void map_view_panelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseEntered
-        IS_ON_VIEWER = 1;        // TODO add your handling code here:
+        
     }//GEN-LAST:event_map_view_panelMouseEntered
 
     private void map_view_panelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseMoved
@@ -523,16 +527,16 @@ public class BTME2UI extends javax.swing.JFrame {
         switch (CURRENT_MODE)
         {
             case 2 -> {
-                g.setColor(Color.blue);
+                mvg.setColor(Color.blue);
                 Point mousePosition = map_view_panel.getMousePosition();
-                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+                mvg.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
             }
             
             case 6 ->
             {
-                g.setColor(Color.blue);
+                mvg.setColor(Color.blue);
                 Point mousePosition = map_view_panel.getMousePosition();
-                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+                mvg.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
             }
         }
 
@@ -681,6 +685,7 @@ public class BTME2UI extends javax.swing.JFrame {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 480, 360);
         draw_barriers();
+        mvg.drawImage(bi, 0, 0, this);
     }
     
     /**
