@@ -32,7 +32,18 @@ public class BTME2UI extends javax.swing.JFrame {
     public static LinkedList<BT_Barrier> MAP_BARRIERS = new LinkedList<>();
     
     public int CURRENT_MODE = 2;
+    public int CURRENT_COLOR = 5;
     public int IS_ON_VIEWER = 0;
+    
+    public Color COLORLIST[] = {
+        Color.GRAY,
+        Color.RED,
+        Color.ORANGE,
+        Color.YELLOW,
+        Color.GREEN,
+        Color.BLUE,
+        Color.magenta
+    };
     
     Graphics g;
     Graphics mvg;
@@ -49,6 +60,7 @@ public class BTME2UI extends javax.swing.JFrame {
     static int labelopacity = 255;
     static int labeltime = 512;
     
+    private static BT_Barrier vert_wall_buffer;
     private static BT_Barrier hori_wall_buffer;
     
     /**
@@ -483,7 +495,7 @@ public class BTME2UI extends javax.swing.JFrame {
                 boolean canplace = canbeplaced();
                 if (canplace == true)
                 {
-                    MAP_BARRIERS.add(new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, 5));
+                    MAP_BARRIERS.add(new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR));
                     System.out.println("WALL ADDED");
                 }
                 else
@@ -498,9 +510,9 @@ public class BTME2UI extends javax.swing.JFrame {
                 boolean canplace = canbeplaced();
                 if (canplace == true)
                 {
-                    if (hori_wall_buffer == null)
+                    if (vert_wall_buffer == null)
                     {
-                        hori_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, 5);
+                        vert_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR);
                     }
                 }
                 else
@@ -509,12 +521,30 @@ public class BTME2UI extends javax.swing.JFrame {
                 }
             }
             
+            case 7 ->
+            {
+                Point mousepoint = map_view_panel.getMousePosition();
+                boolean canplace = canbeplaced();
+                if (canplace == true)
+                {
+                    if (hori_wall_buffer == null)
+                    {
+                        hori_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR);
+                    }
+                }
+                else
+                {
+                    System.out.println("WALL ALREADY EXISTS HERE");
+                }
+            }
+
+            
         }
     }//GEN-LAST:event_map_view_panelMousePressed
 
     private void map_view_panelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseExited
         // TODO add your handling code here:
-
+        vert_wall_buffer = null;
     }//GEN-LAST:event_map_view_panelMouseExited
 
     private void map_view_panelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseEntered
@@ -545,7 +575,7 @@ public class BTME2UI extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_selectMouseClicked
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
+        CURRENT_COLOR = jComboBox1.getSelectedIndex();        // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void btn_objectsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_objectsActionPerformed
@@ -590,28 +620,38 @@ public class BTME2UI extends javax.swing.JFrame {
         {
             case 6 ->
             {
-                if (hori_wall_buffer != null)
+                if (vert_wall_buffer != null && vert_wall_buffer.height > 0)
+                {
+                    MAP_BARRIERS.add(vert_wall_buffer);
+                    vert_wall_buffer = null;
+                    System.out.println("WALL ADDED");
+                }
+                else
+                {
+                    vert_wall_buffer = null;
+                }
+            }
+            
+            case 7 ->
+            {
+                if (hori_wall_buffer != null && hori_wall_buffer.width > 0)
                 {
                     MAP_BARRIERS.add(hori_wall_buffer);
                     hori_wall_buffer = null;
+                    System.out.println("WALL ADDED");
+                }
+                else
+                {
+                    hori_wall_buffer = null;
                 }
             }
+
         }
         
     }//GEN-LAST:event_map_view_panelMouseReleased
 
     private void map_view_panelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseDragged
-        switch (CURRENT_MODE)
-        {
-            case 6 ->
-            {
-                Point mousepoint = map_view_panel.getMousePosition();
-                hori_wall_buffer.width = 8; //(int) (java.lang.Math.ceil((mousepoint.x - hori_wall_buffer.x)/8)*8);
-                hori_wall_buffer.height = (int) (java.lang.Math.floor((mousepoint.y - hori_wall_buffer.y)/8)*8);
-                g.setColor(Color.BLUE);
-                g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, 8, hori_wall_buffer.height);
-            }
-        }
+            
     }//GEN-LAST:event_map_view_panelMouseDragged
 
     private void exportmapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportmapActionPerformed
@@ -631,6 +671,23 @@ public class BTME2UI extends javax.swing.JFrame {
                     savedmap.write('\n');
                     break;
                 }
+            }
+            
+            for (int i = 0; i < MAP_BARRIERS.size(); i++)
+            {
+                savedmap.write(((MAP_BARRIERS.get(i).x) / 8) >> 8);
+                savedmap.write((MAP_BARRIERS.get(i).x) / 8);
+                
+                savedmap.write(((MAP_BARRIERS.get(i).y) / 8) >> 8);
+                savedmap.write((MAP_BARRIERS.get(i).y) / 8);
+                
+                savedmap.write(((MAP_BARRIERS.get(i).width) / 8) >> 8);
+                savedmap.write((MAP_BARRIERS.get(i).width) / 8);
+                
+                savedmap.write(((MAP_BARRIERS.get(i).height) / 8) >> 8);
+                savedmap.write((MAP_BARRIERS.get(i).height) / 8);
+                
+                savedmap.write(MAP_BARRIERS.get(i).color);
             }
             
             savedmap.close();
@@ -681,26 +738,37 @@ public class BTME2UI extends javax.swing.JFrame {
             return;
         }
         mousePosition = thepoint;
+        
+        g.setColor(COLORLIST[CURRENT_COLOR]);
+        g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+        
         switch (CURRENT_MODE)
         {
-            case 2 -> {
-                g.setColor(Color.blue);
-                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
-            }
             
             case 6 ->
             {
-                g.setColor(Color.blue);
-                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
-                if (hori_wall_buffer != null)
+                if (vert_wall_buffer != null)
                 {
-                    hori_wall_buffer.width = 8; //(int) (java.lang.Math.ceil((mousepoint.x - hori_wall_buffer.x)/8)*8);
-                    hori_wall_buffer.height = (int) (java.lang.Math.floor((mousePosition.y - hori_wall_buffer.y)/8)*8) + 8;
-                    g.setColor(Color.BLUE);
-                    g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, 8, hori_wall_buffer.height);
+                    vert_wall_buffer.width = 8; //(int) (java.lang.Math.ceil((mousepoint.x - vert_wall_buffer.x)/8)*8);
+                    vert_wall_buffer.height = (int) (java.lang.Math.floor((mousePosition.y - vert_wall_buffer.y)/8)*8) + 8;
+                    g.setColor(COLORLIST[CURRENT_COLOR]);
+                    g.fillRect(vert_wall_buffer.x, vert_wall_buffer.y, 8, vert_wall_buffer.height);
                 }
                 
             }
+            
+            case 7 ->
+            {
+                if (hori_wall_buffer != null)
+                {
+                    hori_wall_buffer.width = (int) (java.lang.Math.floor((mousePosition.x - hori_wall_buffer.x)/8)*8) + 8;
+                    hori_wall_buffer.height = 8;
+                    g.setColor(COLORLIST[CURRENT_COLOR]);
+                    g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, hori_wall_buffer.width, 8);
+                }
+                
+            }
+
         }
         
         mvg.drawImage(bi, 0, 0, this);
