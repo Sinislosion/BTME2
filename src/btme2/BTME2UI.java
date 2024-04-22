@@ -5,6 +5,8 @@
 package btme2;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -65,6 +67,7 @@ public class BTME2UI extends javax.swing.JFrame {
     private static BT_Barrier MOVE_BUFFER = null;
     private static BT_Barrier DEL_BUFFER = null;
     public boolean MOUSE_IS_HELD = false;
+    public boolean GRID_TOGGLE = false;
     
     /**
      * Creates new form BTME2UI
@@ -125,15 +128,14 @@ public class BTME2UI extends javax.swing.JFrame {
         
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask(){
-        
+            
             @Override
             public void run() {
                 decreasealertopacity();
-                clear_screen();
+                clear_screen();            
             }
             
         }, 0, 1);
-
         
     }
     
@@ -208,6 +210,11 @@ public class BTME2UI extends javax.swing.JFrame {
         jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jPanel1MouseEntered(evt);
+            }
+        });
+        jPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPanel1KeyPressed(evt);
             }
         });
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -708,6 +715,13 @@ public class BTME2UI extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_exportmapActionPerformed
+
+    private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
+        if (evt == KeyEvent.VK_G)
+        {
+            
+        }
+    }//GEN-LAST:event_jPanel1KeyPressed
 
     private void draw_barriers()
     {
