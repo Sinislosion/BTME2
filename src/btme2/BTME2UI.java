@@ -62,6 +62,9 @@ public class BTME2UI extends javax.swing.JFrame {
     
     private static BT_Barrier vert_wall_buffer;
     private static BT_Barrier hori_wall_buffer;
+    private static BT_Barrier MOVE_BUFFER = null;
+    private static BT_Barrier DEL_BUFFER = null;
+    public boolean MOUSE_IS_HELD = false;
     
     /**
      * Creates new form BTME2UI
@@ -540,11 +543,16 @@ public class BTME2UI extends javax.swing.JFrame {
 
             
         }
+        
+        MOUSE_IS_HELD = true;
     }//GEN-LAST:event_map_view_panelMousePressed
 
     private void map_view_panelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseExited
         // TODO add your handling code here:
         vert_wall_buffer = null;
+        hori_wall_buffer = null;
+        MOVE_BUFFER = null;
+        MOUSE_IS_HELD = false;
     }//GEN-LAST:event_map_view_panelMouseExited
 
     private void map_view_panelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseEntered
@@ -648,6 +656,8 @@ public class BTME2UI extends javax.swing.JFrame {
 
         }
         
+        MOUSE_IS_HELD = false;
+        
     }//GEN-LAST:event_map_view_panelMouseReleased
 
     private void map_view_panelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseDragged
@@ -701,6 +711,17 @@ public class BTME2UI extends javax.swing.JFrame {
 
     private void draw_barriers()
     {
+        if (MOUSE_IS_HELD && MOVE_BUFFER != null)
+        {
+            MOVE_BUFFER.x = (mousePosition.x / 8) * 8;
+            MOVE_BUFFER.y = (mousePosition.y / 8) * 8;
+        }
+        
+        if (!MOUSE_IS_HELD)
+        {
+            MOVE_BUFFER = null;
+        }
+        
         for (int i = 0; i < MAP_BARRIERS.size(); i++)
         {
             BT_Barrier barr = MAP_BARRIERS.get(i);
@@ -715,13 +736,37 @@ public class BTME2UI extends javax.swing.JFrame {
                 case 6 -> {g.setColor(Color.magenta);}
             }
             
-            if ((barr.x + barr.width > mousePosition.x) && (barr.x + barr.width < mousePosition.x + 8) && (barr.y + barr.height > mousePosition.y) && (barr.y + barr.height < mousePosition.y + 8))
+            if ((barr.x + barr.width > mousePosition.x) && (barr.x < mousePosition.x) && (barr.y + barr.height > mousePosition.y) && (barr.y < mousePosition.y))
             {
-                if (CURRENT_MODE == 3 || CURRENT_MODE == 4) {
-                    g.setColor(Color.LIGHT_GRAY);
+                switch (CURRENT_MODE)
+                {
+                    default ->
+                    {
+                        MOVE_BUFFER = null;
+                    }
+                    
+                    case 4 -> {
+                        if (MOVE_BUFFER == null)
+                        {
+                            MOVE_BUFFER = barr;
+                        }
+                    }
+                    
+                    case 3 -> {
+                        if (MOUSE_IS_HELD)
+                        {
+                            MAP_BARRIERS.remove(i);
+                        }
+                        g.setColor(Color.LIGHT_GRAY);
+                    }
                 }
             }
             
+            if (MOVE_BUFFER == barr) 
+            {
+                g.setColor(Color.LIGHT_GRAY);
+            }
+
             g.fillRect(barr.x, barr.y, barr.width, barr.height);
         }
     }
@@ -740,7 +785,13 @@ public class BTME2UI extends javax.swing.JFrame {
         mousePosition = thepoint;
         
         g.setColor(COLORLIST[CURRENT_COLOR]);
-        g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+        switch (CURRENT_MODE)
+        {
+            default -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
+            case 3 -> {}
+            case 4 -> {}
+            case 5 -> {}
+        }
         
         switch (CURRENT_MODE)
         {
