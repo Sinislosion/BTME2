@@ -189,6 +189,8 @@ public class BTME2UI extends javax.swing.JFrame {
         edit = new javax.swing.JMenu();
         undo = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         jMenuItem3.setText("jMenuItem3");
 
@@ -454,6 +456,21 @@ public class BTME2UI extends javax.swing.JFrame {
 
         menubar.add(edit);
 
+        jMenu1.setText("View");
+        jMenu1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem2.setText("Toggle Grid");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        menubar.add(jMenu1);
+
         setJMenuBar(menubar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -717,11 +734,13 @@ public class BTME2UI extends javax.swing.JFrame {
     }//GEN-LAST:event_exportmapActionPerformed
 
     private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
-        if (evt == KeyEvent.VK_G)
-        {
-            
-        }
+        
     }//GEN-LAST:event_jPanel1KeyPressed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        GRID_TOGGLE = !GRID_TOGGLE;
+        changealert("Grid Toggled!");
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void draw_barriers()
     {
@@ -789,6 +808,21 @@ public class BTME2UI extends javax.swing.JFrame {
     {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 480, 360);
+        
+        if (GRID_TOGGLE)
+        {
+            g.setColor(new Color(80, 80, 80));
+            for (int x = 0; x < 60; x++)
+            {
+                g.drawLine(x * 8, 0, x * 8, 360);
+            }
+            
+            for (int y = 0; y < 45; y++)
+            {
+                g.drawLine(0, y * 8, 480, y * 8);
+            }
+        }
+        
         draw_barriers();
         Point thepoint = map_view_panel.getMousePosition();
         if (thepoint == null)
@@ -801,10 +835,9 @@ public class BTME2UI extends javax.swing.JFrame {
         g.setColor(COLORLIST[CURRENT_COLOR]);
         switch (CURRENT_MODE)
         {
-            default -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
-            case 3 -> {}
-            case 4 -> {}
-            case 5 -> {}
+            case 2 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
+            case 6 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
+            case 7 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
         }
         
         switch (CURRENT_MODE)
@@ -894,7 +927,9 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
