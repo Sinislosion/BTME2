@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 import static javax.swing.BorderFactory.createBevelBorder;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -50,7 +52,8 @@ public class BTME2UI extends javax.swing.JFrame {
     Graphics g;
     Graphics mvg;
     BufferedImage bi;
-
+    BufferedImage btronimg;
+    
     Cursor amicursor;
     Image cursorimg;
     
@@ -109,6 +112,13 @@ public class BTME2UI extends javax.swing.JFrame {
         // set the window icon
         Image iconimg;
         iconimg = new ImageIcon(this.getClass().getResource("/icon.png")).getImage();
+        try {
+            File shit = new File(this.getClass().getResource("btron_b3.png").getPath());
+            System.out.println(shit.getCanonicalPath());
+            btronimg = ImageIO.read(shit);
+        } catch (IOException ex) {
+            Logger.getLogger(BTME2UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         // set the cursor
         cursorimg = new ImageIcon(this.getClass().getResource("/cursor.png")).getImage();
@@ -808,6 +818,8 @@ public class BTME2UI extends javax.swing.JFrame {
     {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 480, 360);
+                
+        g.drawImage(btronimg, 0, 0, this);
         
         if (GRID_TOGGLE)
         {
