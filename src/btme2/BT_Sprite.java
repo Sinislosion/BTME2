@@ -23,21 +23,26 @@
  */
 package btme2;
 
+import java.awt.image.BufferedImage;
+
 /**
  *
  * @author barackobama
  */
-public class BT_Barrier extends BT_Object {
+public class BT_Sprite {
+    BufferedImage image;
+    int x = 0;
+    int y = 0;
     
-    int width;
-    int height;
-    int color;
-    
-    public BT_Barrier(int x, int y, int width, int height, int color) {
-        super(x, y);
-        this.width = width;
-        this.height = height;
-        this.color = color;
+    public BT_Sprite(BufferedImage image)
+    {
+        this.image = image;
     }
-   
+    
+    public BT_Sprite(BufferedImage image, int x, int y)
+    {
+        this.image = image;
+        this.x = x;
+        this.y = y;
+    }
 }

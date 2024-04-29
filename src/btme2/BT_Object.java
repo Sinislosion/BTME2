@@ -27,17 +27,12 @@ package btme2;
  *
  * @author barackobama
  */
-public class BT_Barrier extends BT_Object {
+public class BT_Object {
+    int x;
+    int y;
     
-    int width;
-    int height;
-    int color;
-    
-    public BT_Barrier(int x, int y, int width, int height, int color) {
-        super(x, y);
-        this.width = width;
-        this.height = height;
-        this.color = color;
+    BT_Object(int x, int y){
+        this.x = x;
+        this.y = y;
     }
-   
 }

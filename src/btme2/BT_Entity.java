@@ -27,15 +27,12 @@ package btme2;
  *
  * @author barackobama
  */
-public class BT_Entity {
-    int x;
-    int y;
+public class BT_Entity extends BT_Object {
     int id;
     int type;
     
     BT_Entity(int x, int y, int id, int type){
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.id = id;
         this.type = type;
     }

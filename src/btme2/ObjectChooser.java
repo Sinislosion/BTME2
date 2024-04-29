@@ -192,6 +192,9 @@ public class ObjectChooser extends javax.swing.JFrame {
             BTME2UI.CURRENT_ENTITY_TYPE = 0;
         }
         BTME2UI.CURRENT_MODE = 5;
+        BTME2UI.btn_stamp.setSelected(true);
+        System.out.println("STAMP TOOL SELECTED");
+        BTME2UI.changealert("Object ID: " + BTME2UI.CURRENT_ENTITY + " Of Type: " + BTME2UI.CURRENT_ENTITY_TYPE + " Selected!");
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
