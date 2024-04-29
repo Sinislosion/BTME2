@@ -34,10 +34,15 @@ public class BTME2UI extends javax.swing.JFrame {
     public static String MAP_NAME = "PLACE";
     
     public static LinkedList<BT_Barrier> MAP_BARRIERS = new LinkedList<>();
+    public static LinkedList<BT_Entity> MAP_ENTITIES = new LinkedList<>();
     
-    public int CURRENT_MODE = 2;
-    public int CURRENT_COLOR = 5;
-    public int IS_ON_VIEWER = 0;
+    public static BufferedImage Entity_Images[][] = new BufferedImage[255][255];
+    
+    public static int CURRENT_MODE = 2;
+    public static int CURRENT_COLOR = 5;
+    public static int CURRENT_ENTITY = 1;
+    public static int CURRENT_ENTITY_TYPE = 0;
+    public static int IS_ON_VIEWER = 0;
     
     public Color COLORLIST[] = {
         Color.GRAY,
@@ -52,7 +57,6 @@ public class BTME2UI extends javax.swing.JFrame {
     Graphics g;
     Graphics mvg;
     BufferedImage bi;
-    BufferedImage btronimg;
     
     Cursor amicursor;
     Image cursorimg;
@@ -113,9 +117,32 @@ public class BTME2UI extends javax.swing.JFrame {
         Image iconimg;
         iconimg = new ImageIcon(this.getClass().getResource("/icon.png")).getImage();
         try {
-            File shit = new File(this.getClass().getResource("btron_b3.png").getPath());
-            System.out.println(shit.getCanonicalPath());
-            btronimg = ImageIO.read(shit);
+            File shit;
+            shit = new File(this.getClass().getResource("btron-assets/btron_b3.png").getPath());
+            Entity_Images[0][0] = ImageIO.read(shit);
+            
+            shit = new File(this.getClass().getResource("btron-assets/btron_camera.png").getPath());
+            Entity_Images[1][0] = ImageIO.read(shit);
+            
+            shit = new File(this.getClass().getResource("btron-assets/btron-verticaldoor-default.png").getPath());
+            Entity_Images[2][0] = ImageIO.read(shit);
+            
+            shit = new File(this.getClass().getResource("btron-assets/btron-verticaldoor-red.png").getPath());
+            Entity_Images[2][1] = ImageIO.read(shit);
+            
+            shit = new File(this.getClass().getResource("btron-assets/btron-verticaldoor-green.png").getPath());
+            Entity_Images[2][2] = ImageIO.read(shit);
+            
+            shit = new File(this.getClass().getResource("btron-assets/btron-verticaldoor-blue.png").getPath());
+            Entity_Images[2][3] = ImageIO.read(shit);
+            
+            shit = new File(this.getClass().getResource("btron-assets/btron-verticaldoor-yellow.png").getPath());
+            Entity_Images[2][4] = ImageIO.read(shit);
+            
+            shit = new File(this.getClass().getResource("btron-assets/btron-verticaldoor-purple.png").getPath());
+            Entity_Images[2][5] = ImageIO.read(shit);
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(BTME2UI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -133,7 +160,6 @@ public class BTME2UI extends javax.swing.JFrame {
         this.setIconImage(iconimg);
         this.setLocationRelativeTo(null);
         
-        
         jLabel3.setForeground(new Color (255, 255, 255, labelopacity));
         
         Timer timer = new Timer();
@@ -146,6 +172,7 @@ public class BTME2UI extends javax.swing.JFrame {
             }
             
         }, 0, 1);
+        
         
     }
     
@@ -818,8 +845,6 @@ public class BTME2UI extends javax.swing.JFrame {
     {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 480, 360);
-                
-        g.drawImage(btronimg, 0, 0, this);
         
         if (GRID_TOGGLE)
         {
@@ -847,9 +872,18 @@ public class BTME2UI extends javax.swing.JFrame {
         g.setColor(COLORLIST[CURRENT_COLOR]);
         switch (CURRENT_MODE)
         {
+            // WALL
             case 2 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
+            
+            // STAMP
+            case 5 -> {g.drawImage(Entity_Images[CURRENT_ENTITY][CURRENT_ENTITY_TYPE], (mousePosition.x/8) * 8, (mousePosition.y/8) * 8, this);}
+            
+            // VERTICAL WALL
             case 6 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
+            
+            // HORIZONTAL WALL 
             case 7 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
+            
         }
         
         switch (CURRENT_MODE)
@@ -928,7 +962,7 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JButton btn_objects;
     private javax.swing.JToggleButton btn_pencil;
     private javax.swing.JToggleButton btn_select;
-    private javax.swing.JToggleButton btn_stamp;
+    public static javax.swing.JToggleButton btn_stamp;
     private javax.swing.JToggleButton btn_vertline;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JMenu edit;

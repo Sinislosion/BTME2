@@ -27,6 +27,16 @@ package btme2;
  *
  * @author barackobama
  */
-class e {
+public class BT_Entity {
+    int x;
+    int y;
+    int id;
+    int type;
     
+    BT_Entity(int x, int y, int id, int type){
+        this.x = x;
+        this.y = y;
+        this.id = id;
+        this.type = type;
+    }
 }

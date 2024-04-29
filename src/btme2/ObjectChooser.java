@@ -185,6 +185,13 @@ public class ObjectChooser extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        BTME2UI.CURRENT_ENTITY = jList1.getSelectedIndex();
+        BTME2UI.CURRENT_ENTITY_TYPE = jList2.getSelectedIndex();
+        if (BTME2UI.CURRENT_ENTITY_TYPE == -1)
+        {
+            BTME2UI.CURRENT_ENTITY_TYPE = 0;
+        }
+        BTME2UI.CURRENT_MODE = 5;
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
