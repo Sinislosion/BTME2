@@ -16,10 +16,18 @@ import javax.swing.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static javax.swing.BorderFactory.createBevelBorder;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.imageio.ImageIO;
+import java.io.IOException; 
+import java.util.Scanner; 
+
+import javax.sound.sampled.AudioInputStream; 
+import javax.sound.sampled.AudioSystem; 
+import javax.sound.sampled.Clip; 
+import javax.sound.sampled.LineUnavailableException; 
+import javax.sound.sampled.UnsupportedAudioFileException; 
+
 
 /**
  *
@@ -43,6 +51,8 @@ public class BTME2UI extends javax.swing.JFrame {
     public static int CURRENT_ENTITY = 1;
     public static int CURRENT_ENTITY_TYPE = 0;
     public static int IS_ON_VIEWER = 0;
+    
+    public static int MOUSE_PRESSED_TYPE = 0;
     
     public Color COLORLIST[] = {
         Color.GRAY,
@@ -112,6 +122,16 @@ public class BTME2UI extends javax.swing.JFrame {
         g = bi.createGraphics();
         mvg = map_view_panel.getGraphics();
         
+        // music playback
+        try 
+        {
+            UI_BGM audioPlayer = new UI_BGM();
+            audioPlayer.clip.start();
+        }
+        catch (IOException | LineUnavailableException | UnsupportedAudioFileException ex)
+        {
+            System.out.println("Something went wrong with Audio Playback");
+        }
         
         // set the window icon
         Image iconimg;
@@ -538,12 +558,26 @@ public class BTME2UI extends javax.swing.JFrame {
 
     public boolean canbeplaced()
     {
-        Point mousepoint = map_view_panel.getMousePosition();
         boolean canplace = true;
         for (int i = 0; i < MAP_BARRIERS.size(); i++)
         {
             BT_Barrier barr = MAP_BARRIERS.get(i);
-            canplace = (barr.x != (mousepoint.x/8)*8 || barr.y != (mousepoint.y/8)*8);
+            canplace = !((barr.x + barr.width > mousePosition.x) && (barr.x < mousePosition.x) && (barr.y + barr.height > mousePosition.y) && (barr.y < mousePosition.y));
+            if (canplace == false) {return false;}
+
+        }
+        return true;
+    }
+    
+    public boolean canbeplaced_entity()
+    {
+        boolean canplace = true;
+        for (int i = 0; i < MAP_ENTITIES.size(); i++)
+        {
+            BT_Entity enti = MAP_ENTITIES.get(i);
+            int entiwidth = Entity_Images[enti.id][enti.type].image.getWidth();
+            int entiheight = Entity_Images[enti.id][enti.type].image.getHeight();
+            canplace = !((enti.x + entiwidth > mousePosition.x) && (enti.x < mousePosition.x) && (enti.y + entiheight > mousePosition.y) && (enti.y < mousePosition.y));
             if (canplace == false) {return false;}
 
         }
@@ -551,29 +585,17 @@ public class BTME2UI extends javax.swing.JFrame {
     }
     
     private void map_view_panelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMousePressed
-
+ 
+        MOUSE_PRESSED_TYPE = evt.getButton();
+        
         switch (CURRENT_MODE)
         {
-            case 2 -> {
-                Point mousepoint = map_view_panel.getMousePosition();
-                boolean canplace = canbeplaced();
-                if (canplace == true)
-                {
-                    MAP_BARRIERS.add(new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR));
-                    System.out.println("WALL ADDED");
-                }
-                else
-                {
-                    System.out.println("WALL ALREADY EXISTS HERE");
-                }
-            }
             
             case 5 -> {
-                Point mousepoint = map_view_panel.getMousePosition();
-                boolean canplace = canbeplaced();
+                boolean canplace = canbeplaced_entity();
                 if (canplace == true)
                 {
-                    MAP_ENTITIES.add(new BT_Entity((mousepoint.x/8)*8, (mousepoint.y/8)*8, CURRENT_ENTITY, CURRENT_ENTITY_TYPE));
+                    MAP_ENTITIES.add(new BT_Entity((mousePosition.x/8)*8, (mousePosition.y/8)*8, CURRENT_ENTITY, CURRENT_ENTITY_TYPE));
                     System.out.println("ENTITY ADDED");
                 }
                 else
@@ -584,36 +606,27 @@ public class BTME2UI extends javax.swing.JFrame {
             
             case 6 ->
             {
-                Point mousepoint = map_view_panel.getMousePosition();
                 boolean canplace = canbeplaced();
-                if (canplace == true)
+                if (canplace && MOUSE_PRESSED_TYPE != 3)
                 {
                     if (vert_wall_buffer == null)
                     {
-                        vert_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR);
+                        vert_wall_buffer = new BT_Barrier((mousePosition.x/8)*8, (mousePosition.y/8)*8, 8, 8, CURRENT_COLOR);
                     }
-                }
-                else
-                {
-                    System.out.println("WALL ALREADY EXISTS HERE");
                 }
             }
             
             case 7 ->
             {
-                Point mousepoint = map_view_panel.getMousePosition();
                 boolean canplace = canbeplaced();
-                if (canplace == true)
+                if (canplace && MOUSE_PRESSED_TYPE != 3)
                 {
                     if (hori_wall_buffer == null)
                     {
-                        hori_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR);
+                        hori_wall_buffer = new BT_Barrier((mousePosition.x/8)*8, (mousePosition.y/8)*8, 8, 8, CURRENT_COLOR);
                     }
                 }
-                else
-                {
-                    System.out.println("WALL ALREADY EXISTS HERE");
-                }
+
             }
 
             
@@ -824,15 +837,17 @@ public class BTME2UI extends javax.swing.JFrame {
             {
                 switch (CURRENT_MODE)
                 {
-                    default ->
-                    {
-                        MOVE_BUFFER = null;
-                    }
                     
                     case 4 -> {
                         if (MOVE_BUFFER == null)
                         {
                             MOVE_BUFFER = barr;
+                        }
+                    }
+                    
+                    case 2, 6, 7 -> {
+                        if (MOUSE_IS_HELD && MOUSE_PRESSED_TYPE == 3) {
+                            MAP_BARRIERS.remove(i);
                         }
                     }
                     
@@ -860,8 +875,10 @@ public class BTME2UI extends javax.swing.JFrame {
             
             int entiwidth = Entity_Images[enti.id][enti.type].image.getWidth();
             int entiheight = Entity_Images[enti.id][enti.type].image.getHeight();
+            int entioriginx = Entity_Images[enti.id][enti.type].x;
+            int entioriginy = Entity_Images[enti.id][enti.type].y;
             
-            if ((enti.x + entiwidth > mousePosition.x) && (enti.x < mousePosition.x) && (enti.y + entiheight > mousePosition.y) && (enti.y < mousePosition.y))
+            if ((enti.x + entiwidth - entioriginx > mousePosition.x) && (enti.x - entioriginx < mousePosition.x) && (enti.y + entiheight - entioriginy > mousePosition.y) && (enti.y - entioriginy < mousePosition.y))
             {
                 switch (CURRENT_MODE)
                 {
@@ -871,8 +888,7 @@ public class BTME2UI extends javax.swing.JFrame {
                         {
                             MOVE_BUFFER = enti;
                         }
-                        g.setColor(Color.WHITE);
-                        g.fillRect(enti.x, enti.y, entiwidth, entiheight);
+                        
                     }
                     
                     case 3 -> {
@@ -945,7 +961,16 @@ public class BTME2UI extends javax.swing.JFrame {
         switch (CURRENT_MODE)
         {
             // WALL
-            case 2 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
+            case 2 -> {
+                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+                boolean canplace = canbeplaced();
+                if (canplace && MOUSE_IS_HELD)
+                {
+                    if (MOUSE_PRESSED_TYPE != 3) {
+                        MAP_BARRIERS.add(new BT_Barrier((mousePosition.x/8)*8, (mousePosition.y/8)*8, 8, 8, CURRENT_COLOR));
+                    }
+                }
+            }
             
             // STAMP
             case 5 -> {
@@ -954,30 +979,20 @@ public class BTME2UI extends javax.swing.JFrame {
             }
             
             // VERTICAL WALL
-            case 6 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
-            
-            // HORIZONTAL WALL 
-            case 7 -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
-            
-        }
-        
-        switch (CURRENT_MODE)
-        {
-            
-            case 6 ->
-            {
+            case 6 -> {
+                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
                 if (vert_wall_buffer != null)
                 {
-                    vert_wall_buffer.width = 8; //(int) (java.lang.Math.ceil((mousepoint.x - vert_wall_buffer.x)/8)*8);
+                    vert_wall_buffer.width = 8;
                     vert_wall_buffer.height = (int) (java.lang.Math.floor((mousePosition.y - vert_wall_buffer.y)/8)*8) + 8;
                     g.setColor(COLORLIST[CURRENT_COLOR]);
                     g.fillRect(vert_wall_buffer.x, vert_wall_buffer.y, 8, vert_wall_buffer.height);
                 }
-                
             }
             
-            case 7 ->
-            {
+            // HORIZONTAL WALL 
+            case 7 -> {
+                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
                 if (hori_wall_buffer != null)
                 {
                     hori_wall_buffer.width = (int) (java.lang.Math.floor((mousePosition.x - hori_wall_buffer.x)/8)*8) + 8;
@@ -985,9 +1000,8 @@ public class BTME2UI extends javax.swing.JFrame {
                     g.setColor(COLORLIST[CURRENT_COLOR]);
                     g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, hori_wall_buffer.width, 8);
                 }
-                
             }
-
+            
         }
         
         mvg.drawImage(bi, 0, 0, this);
