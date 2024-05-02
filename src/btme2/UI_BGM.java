@@ -41,8 +41,8 @@ public class UI_BGM {
     Clip clip;
     AudioInputStream audioInputStream; 
     
-    String musics[] = { "src/btme2/music/ledstorm.wav", "src/btme2/music/acid_god.wav", "src/btme2/music/bubblegum.wav", "src/btme2/music/i need a gus  astro.wav",
-                        "src/btme2/music/sirens.wav", "src/btme2/music/a piece of magicmix.wav"
+    String musics[] = { "/btme2/music/ledstorm.wav", "/btme2/music/acid_god.wav", "/btme2/music/bubblegum.wav", "/btme2/music/i need a gus  astro.wav",
+                        "/btme2/music/sirens.wav"
     };
     
     int rnd = new Random().nextInt(musics.length);
@@ -51,10 +51,11 @@ public class UI_BGM {
     public UI_BGM()
         throws UnsupportedAudioFileException, IOException, LineUnavailableException
     {
-        System.out.println(new File(filepath).getAbsoluteFile());
-        audioInputStream = AudioSystem.getAudioInputStream(new File(filepath));
+        System.out.println(new File(getClass().getResource(filepath).getPath()));
+        audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(filepath));
         clip = AudioSystem.getClip();
         clip.open(audioInputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
+        BTME2UI.changealert("Now Playing: " + filepath.replace(".wav", ".mod").replace("/btme2/music/", ""));
     }
 }
