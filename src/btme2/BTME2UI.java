@@ -85,7 +85,7 @@ public class BTME2UI extends javax.swing.JFrame {
     private static BT_Barrier vert_wall_buffer;
     private static BT_Barrier hori_wall_buffer;
     private static BT_Object MOVE_BUFFER = null;
-    private static LinkedList<BT_Object> SELECTIONS_BUFFER = new LinkedList();
+    private static final LinkedList<BT_Object> SELECTIONS_BUFFER = new LinkedList();
     public boolean MOUSE_IS_HELD = false;
     
     public static SELECT_TOOL_BUFFER SELECT_BUFFER = null;
@@ -779,22 +779,23 @@ public class BTME2UI extends javax.swing.JFrame {
             FileOutputStream savedmap = new FileOutputStream(MAP_NAME + ".btm");
             savedmap.write(HEADER);
             
+            int amountOfBarrier = MAP_BARRIERS.size();
+            savedmap.write(amountOfBarrier >> 8);
+            savedmap.write(amountOfBarrier);
+            
+            int amountOfEntity = MAP_ENTITIES.size();
+            savedmap.write(amountOfEntity >> 8);
+            savedmap.write(amountOfEntity);
+            
+            savedmap.write(MAP_NAME.length());
+            
             // WRITE THE NAME OF THE MAP
             for (int i = 0; i < 16; i++)
             {
                 if (i < MAP_NAME.length()){
                     savedmap.write(MAP_NAME.charAt(i));
                 }
-                else
-                {
-                    savedmap.write('\n');
-                    break;
-                }
             }
-            
-            int amountOfBarrier = MAP_BARRIERS.size();
-            savedmap.write(amountOfBarrier >> 8);
-            savedmap.write(amountOfBarrier);
             
             for (int i = 0; i < MAP_BARRIERS.size(); i++)
             {

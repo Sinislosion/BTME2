@@ -98,7 +98,6 @@ public class BTME2_About extends javax.swing.JFrame {
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMaximumSize(new java.awt.Dimension(472, 284));
         setMinimumSize(new java.awt.Dimension(472, 284));
-        setPreferredSize(new java.awt.Dimension(472, 284));
         setResizable(false);
 
         jToggleButton2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
