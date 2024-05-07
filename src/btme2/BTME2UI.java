@@ -5,7 +5,10 @@
 package btme2;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,9 +16,18 @@ import javax.swing.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static javax.swing.BorderFactory.createBevelBorder;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.imageio.ImageIO;
+import java.io.IOException; 
+import java.util.Scanner; 
+
+import javax.sound.sampled.AudioInputStream; 
+import javax.sound.sampled.AudioSystem; 
+import javax.sound.sampled.Clip; 
+import javax.sound.sampled.LineUnavailableException; 
+import javax.sound.sampled.UnsupportedAudioFileException; 
+
 
 /**
  *
@@ -29,11 +41,20 @@ public class BTME2UI extends javax.swing.JFrame {
      */
     public static String MAP_NAME = "PLACE";
     
-    public static LinkedList<BT_Barrier> MAP_BARRIERS = new LinkedList<>();
+    private byte HEADER[] = {'B', 'T', 'M', 'v', 2, 0, 0, 0};
     
-    public int CURRENT_MODE = 2;
-    public int CURRENT_COLOR = 5;
-    public int IS_ON_VIEWER = 0;
+    public static LinkedList<BT_Barrier> MAP_BARRIERS = new LinkedList<>();
+    public static LinkedList<BT_Entity> MAP_ENTITIES = new LinkedList<>();
+    
+    public static BT_Sprite Entity_Images[][] = new BT_Sprite[255][255];
+    
+    public static int CURRENT_MODE = 2;
+    public static int CURRENT_COLOR = 5;
+    public static int CURRENT_ENTITY = 1;
+    public static int CURRENT_ENTITY_TYPE = 0;
+    public static int IS_ON_VIEWER = 0;
+    
+    public static int MOUSE_PRESSED_TYPE = 0;
     
     public Color COLORLIST[] = {
         Color.GRAY,
@@ -48,23 +69,27 @@ public class BTME2UI extends javax.swing.JFrame {
     Graphics g;
     Graphics mvg;
     BufferedImage bi;
-
+    
     Cursor amicursor;
     Image cursorimg;
     
     JFrame choose;
+    JFrame about;
     JFrame namechoose;
     
     Point mousePosition;
     
-    static int labelopacity = 255;
-    static int labeltime = 512;
+    static int labelopacity = 0;
+    static int labeltime = 0;
     
     private static BT_Barrier vert_wall_buffer;
     private static BT_Barrier hori_wall_buffer;
-    private static BT_Barrier MOVE_BUFFER = null;
-    private static BT_Barrier DEL_BUFFER = null;
+    private static BT_Object MOVE_BUFFER = null;
+    private static final LinkedList<BT_Object> SELECTIONS_BUFFER = new LinkedList();
     public boolean MOUSE_IS_HELD = false;
+    
+    public static SELECT_TOOL_BUFFER SELECT_BUFFER = null;
+    public boolean GRID_TOGGLE = false;
     
     /**
      * Creates new form BTME2UI
@@ -102,10 +127,50 @@ public class BTME2UI extends javax.swing.JFrame {
         g = bi.createGraphics();
         mvg = map_view_panel.getGraphics();
         
+        // music playback
+        try 
+        {
+            UI_BGM audioPlayer = new UI_BGM();
+            audioPlayer.clip.start();
+        }
+        catch (IOException | LineUnavailableException | UnsupportedAudioFileException ex)
+        {
+            System.out.println("Something went wrong with Audio Playback");
+        }
         
         // set the window icon
         Image iconimg;
         iconimg = new ImageIcon(this.getClass().getResource("/icon.png")).getImage();
+        try {
+            String filepath;
+            filepath = "/btme2/btron-assets/btron_b3.png";
+            Entity_Images[0][0] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)), 4, 12);
+            
+            filepath = "btron-assets/btron_camera.png";
+            Entity_Images[1][0] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-verticaldoor-default.png";
+            Entity_Images[2][0] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-verticaldoor-red.png";
+            Entity_Images[2][1] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-verticaldoor-green.png";
+            Entity_Images[2][2] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-verticaldoor-blue.png";
+            Entity_Images[2][3] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-verticaldoor-yellow.png";
+            Entity_Images[2][4] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-verticaldoor-purple.png";
+            Entity_Images[2][5] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(BTME2UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         // set the cursor
         cursorimg = new ImageIcon(this.getClass().getResource("/cursor.png")).getImage();
@@ -113,6 +178,7 @@ public class BTME2UI extends javax.swing.JFrame {
         setCursor(amicursor);
         
         // set popup windows
+        about = new BTME2_About();
         choose = new ObjectChooser();
         namechoose = new NameEntry();
         
@@ -120,20 +186,19 @@ public class BTME2UI extends javax.swing.JFrame {
         this.setIconImage(iconimg);
         this.setLocationRelativeTo(null);
         
-        
         jLabel3.setForeground(new Color (255, 255, 255, labelopacity));
         
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask(){
-        
+            
             @Override
             public void run() {
                 decreasealertopacity();
-                clear_screen();
+                clear_screen();            
             }
             
         }, 0, 1);
-
+        
         
     }
     
@@ -145,10 +210,10 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel3.setForeground(new Color (255, 255, 255, labelopacity));
     }
     
-    public void changealert(String message)
+    public static void changealert(String message)
     {
         BTME2UI.labelopacity = 255;
-        BTME2UI.labeltime = 512;
+        BTME2UI.labeltime = 1024;
         jLabel3.setText(message);
         jLabel3.setForeground(new Color (255, 255, 255, labelopacity));
     }
@@ -163,7 +228,6 @@ public class BTME2UI extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup2 = new javax.swing.ButtonGroup();
-        jMenuItem3 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         btn_select = new javax.swing.JToggleButton();
@@ -184,11 +248,12 @@ public class BTME2UI extends javax.swing.JFrame {
         file = new javax.swing.JMenu();
         importmap = new javax.swing.JMenuItem();
         exportmap = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
         edit = new javax.swing.JMenu();
         undo = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-
-        jMenuItem3.setText("jMenuItem3");
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("B-TRON MAP EDITOR 2");
@@ -200,7 +265,6 @@ public class BTME2UI extends javax.swing.JFrame {
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
         jPanel1.setCursor(amicursor);
         jPanel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
@@ -208,6 +272,11 @@ public class BTME2UI extends javax.swing.JFrame {
         jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jPanel1MouseEntered(evt);
+            }
+        });
+        jPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPanel1KeyPressed(evt);
             }
         });
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -377,7 +446,7 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Border Color");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 450, 110, -1));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 440, 110, -1));
 
         jComboBox1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Black", "Red", "Orange", "Yellow", "Green", "Blue", "Violet" }));
@@ -387,7 +456,7 @@ public class BTME2UI extends javax.swing.JFrame {
                 jComboBox1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 470, 110, -1));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 110, -1));
 
         jLabel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -397,7 +466,7 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Initialized");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 480, -1, -1));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 470, -1, -1));
 
         menubar.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
         menubar.setName("Menu"); // NOI18N
@@ -419,6 +488,16 @@ public class BTME2UI extends javax.swing.JFrame {
             }
         });
         file.add(exportmap);
+
+        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        jMenuItem4.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem4.setText("About");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        file.add(jMenuItem4);
 
         menubar.add(file);
 
@@ -447,17 +526,32 @@ public class BTME2UI extends javax.swing.JFrame {
 
         menubar.add(edit);
 
+        jMenu1.setText("View");
+        jMenu1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem2.setText("Toggle Grid");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        menubar.add(jMenu1);
+
         setJMenuBar(menubar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, 514, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
         );
 
         pack();
@@ -475,14 +569,37 @@ public class BTME2UI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jPanel1MouseEntered
 
+    private boolean is_barrier_hitting_mouse(BT_Barrier barr)
+    {
+        return (    (barr.x + barr.width > ((mousePosition.x / 8) * 8)) && 
+                    (barr.x < ((mousePosition.x / 8) * 8) + 8) && 
+                    (barr.y + barr.height > ((mousePosition.y / 8) * 8)) && 
+                    (barr.y < ((mousePosition.y / 8) * 8) + 8)
+               );
+    }
+    
     public boolean canbeplaced()
     {
-        Point mousepoint = map_view_panel.getMousePosition();
         boolean canplace = true;
         for (int i = 0; i < MAP_BARRIERS.size(); i++)
         {
             BT_Barrier barr = MAP_BARRIERS.get(i);
-            canplace = (barr.x != (mousepoint.x/8)*8 || barr.y != (mousepoint.y/8)*8);
+            canplace = !(is_barrier_hitting_mouse(barr));
+            if (canplace == false) {return false;}
+
+        }
+        return true;
+    }
+    
+    public boolean canbeplaced_entity()
+    {
+        boolean canplace = true;
+        for (int i = 0; i < MAP_ENTITIES.size(); i++)
+        {
+            BT_Entity enti = MAP_ENTITIES.get(i);
+            int entiwidth = Entity_Images[enti.id][enti.type].image.getWidth();
+            int entiheight = Entity_Images[enti.id][enti.type].image.getHeight();
+            canplace = !((enti.x + entiwidth > mousePosition.x) && (enti.x < mousePosition.x) && (enti.y + entiheight > mousePosition.y) && (enti.y < mousePosition.y));
             if (canplace == false) {return false;}
 
         }
@@ -490,55 +607,48 @@ public class BTME2UI extends javax.swing.JFrame {
     }
     
     private void map_view_panelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMousePressed
-
+ 
+        MOUSE_PRESSED_TYPE = evt.getButton();
+        
         switch (CURRENT_MODE)
         {
-            case 2 -> {
-                Point mousepoint = map_view_panel.getMousePosition();
-                boolean canplace = canbeplaced();
+            
+            case 5 -> {
+                boolean canplace = canbeplaced_entity();
                 if (canplace == true)
                 {
-                    MAP_BARRIERS.add(new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR));
-                    System.out.println("WALL ADDED");
+                    MAP_ENTITIES.add(new BT_Entity((mousePosition.x/8)*8, (mousePosition.y/8)*8, CURRENT_ENTITY, CURRENT_ENTITY_TYPE));
+                    System.out.println("ENTITY ADDED");
                 }
                 else
                 {
-                    System.out.println("WALL ALREADY EXISTS HERE");
+                    System.out.println("ENTITY ALREADY EXISTS HERE");
                 }
             }
             
             case 6 ->
             {
-                Point mousepoint = map_view_panel.getMousePosition();
                 boolean canplace = canbeplaced();
-                if (canplace == true)
+                if (canplace && MOUSE_PRESSED_TYPE != 3)
                 {
                     if (vert_wall_buffer == null)
                     {
-                        vert_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR);
+                        vert_wall_buffer = new BT_Barrier((mousePosition.x/8)*8, (mousePosition.y/8)*8, 8, 8, CURRENT_COLOR);
                     }
-                }
-                else
-                {
-                    System.out.println("WALL ALREADY EXISTS HERE");
                 }
             }
             
             case 7 ->
             {
-                Point mousepoint = map_view_panel.getMousePosition();
                 boolean canplace = canbeplaced();
-                if (canplace == true)
+                if (canplace && MOUSE_PRESSED_TYPE != 3)
                 {
                     if (hori_wall_buffer == null)
                     {
-                        hori_wall_buffer = new BT_Barrier((mousepoint.x/8)*8, (mousepoint.y/8)*8, 8, 8, CURRENT_COLOR);
+                        hori_wall_buffer = new BT_Barrier((mousePosition.x/8)*8, (mousePosition.y/8)*8, 8, 8, CURRENT_COLOR);
                     }
                 }
-                else
-                {
-                    System.out.println("WALL ALREADY EXISTS HERE");
-                }
+
             }
 
             
@@ -666,20 +776,24 @@ public class BTME2UI extends javax.swing.JFrame {
 
     private void exportmapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportmapActionPerformed
         try {
-            FileOutputStream savedmap = new FileOutputStream("export.btm");
-            byte HEADER[] = {'B', 'T', 'M', 'v', 2, 0, 0, 0};
+            FileOutputStream savedmap = new FileOutputStream(MAP_NAME + ".btm");
             savedmap.write(HEADER);
+            
+            int amountOfBarrier = MAP_BARRIERS.size();
+            savedmap.write(amountOfBarrier >> 8);
+            savedmap.write(amountOfBarrier);
+            
+            int amountOfEntity = MAP_ENTITIES.size();
+            savedmap.write(amountOfEntity >> 8);
+            savedmap.write(amountOfEntity);
+            
+            savedmap.write(MAP_NAME.length());
             
             // WRITE THE NAME OF THE MAP
             for (int i = 0; i < 16; i++)
             {
                 if (i < MAP_NAME.length()){
                     savedmap.write(MAP_NAME.charAt(i));
-                }
-                else
-                {
-                    savedmap.write('\n');
-                    break;
                 }
             }
             
@@ -700,6 +814,19 @@ public class BTME2UI extends javax.swing.JFrame {
                 savedmap.write(MAP_BARRIERS.get(i).color);
             }
             
+            for (int i = 0; i < MAP_ENTITIES.size(); i++)
+            {
+                savedmap.write(((MAP_ENTITIES.get(i).x) / 8) >> 8);
+                savedmap.write((MAP_ENTITIES.get(i).x) / 8);
+                
+                savedmap.write(((MAP_ENTITIES.get(i).y) / 8) >> 8);
+                savedmap.write((MAP_ENTITIES.get(i).y) / 8);
+                
+                savedmap.write(MAP_ENTITIES.get(i).id);
+                savedmap.write(MAP_ENTITIES.get(i).type);
+                
+            }
+            
             savedmap.close();
             System.out.println("Map Exported Successfully!");
             changealert("Map Exported!");
@@ -709,7 +836,45 @@ public class BTME2UI extends javax.swing.JFrame {
         
     }//GEN-LAST:event_exportmapActionPerformed
 
-    private void draw_barriers()
+    private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
+        
+    }//GEN-LAST:event_jPanel1KeyPressed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        GRID_TOGGLE = !GRID_TOGGLE;
+        changealert("Grid Toggled!");
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        about.setLocationRelativeTo(null);
+        about.setVisible(true);        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private boolean is_barrier_hitting_selection(BT_Barrier barr)
+    {
+        return (SELECT_BUFFER != null &&
+                    (barr.x + barr.width > SELECT_BUFFER.startx) && 
+                    (barr.x < SELECT_BUFFER.startx + SELECT_BUFFER.width) && 
+                    (barr.y + barr.height > SELECT_BUFFER.starty) && 
+                    (barr.y < SELECT_BUFFER.starty + SELECT_BUFFER.height)  
+                );
+    }
+    
+    private boolean is_entity_hitting_selection(BT_Entity enti)
+    {
+        int entiwidth = Entity_Images[enti.id][enti.type].image.getWidth();
+        int entiheight = Entity_Images[enti.id][enti.type].image.getHeight();
+        int entioriginx = Entity_Images[enti.id][enti.type].x;
+        int entioriginy = Entity_Images[enti.id][enti.type].y;
+        return (SELECT_BUFFER != null &&
+                    (enti.x + entiwidth - entioriginx > SELECT_BUFFER.startx) && 
+                    (enti.x - entioriginx < SELECT_BUFFER.startx + SELECT_BUFFER.width) && 
+                    (enti.y + entiheight - entioriginy > SELECT_BUFFER.starty) && 
+                    (enti.y - entioriginy < SELECT_BUFFER.starty + SELECT_BUFFER.height)  
+                );
+    }
+    
+    private void draw_viewer()
     {
         if (MOUSE_IS_HELD && MOVE_BUFFER != null)
         {
@@ -736,19 +901,21 @@ public class BTME2UI extends javax.swing.JFrame {
                 case 6 -> {g.setColor(Color.magenta);}
             }
             
-            if ((barr.x + barr.width > mousePosition.x) && (barr.x < mousePosition.x) && (barr.y + barr.height > mousePosition.y) && (barr.y < mousePosition.y))
+            if (is_barrier_hitting_mouse(barr))
             {
                 switch (CURRENT_MODE)
                 {
-                    default ->
-                    {
-                        MOVE_BUFFER = null;
-                    }
                     
                     case 4 -> {
                         if (MOVE_BUFFER == null)
                         {
                             MOVE_BUFFER = barr;
+                        }
+                    }
+                    
+                    case 2, 6, 7 -> {
+                        if (MOUSE_IS_HELD && MOUSE_PRESSED_TYPE == 3) {
+                            MAP_BARRIERS.remove(i);
                         }
                     }
                     
@@ -762,20 +929,113 @@ public class BTME2UI extends javax.swing.JFrame {
                 }
             }
             
-            if (MOVE_BUFFER == barr) 
+            if (MOVE_BUFFER == barr)
+            {
+                g.setColor(Color.LIGHT_GRAY);
+            }
+            
+            if (is_barrier_hitting_selection(barr) || SELECTIONS_BUFFER.contains(barr))
             {
                 g.setColor(Color.LIGHT_GRAY);
             }
 
             g.fillRect(barr.x, barr.y, barr.width, barr.height);
         }
+        
+        for (int i = 0; i < MAP_ENTITIES.size(); i++)
+        {
+            BT_Entity enti = MAP_ENTITIES.get(i);
+            
+            int entiwidth = Entity_Images[enti.id][enti.type].image.getWidth();
+            int entiheight = Entity_Images[enti.id][enti.type].image.getHeight();
+            int entioriginx = Entity_Images[enti.id][enti.type].x;
+            int entioriginy = Entity_Images[enti.id][enti.type].y;
+            
+            if (MOVE_BUFFER == enti)
+            {
+                g.setColor(Color.WHITE);
+                g.fillRect(enti.x - entioriginx, enti.y - entioriginy, entiwidth, entiheight);
+            }
+            
+            if (is_entity_hitting_selection(enti) || SELECTIONS_BUFFER.contains(enti))
+            {
+                g.setColor(Color.WHITE);
+                g.fillRect(enti.x - entioriginx, enti.y - entioriginy, entiwidth, entiheight);
+            }
+            
+            if ((enti.x + entiwidth - entioriginx > mousePosition.x) && (enti.x - entioriginx < mousePosition.x) && (enti.y + entiheight - entioriginy > mousePosition.y) && (enti.y - entioriginy < mousePosition.y))
+            {
+                switch (CURRENT_MODE)
+                {
+                    case 4 ->
+                    {
+                        if (MOVE_BUFFER == null)
+                        {
+                            MOVE_BUFFER = enti;
+                            g.setColor(Color.WHITE);
+                            g.fillRect(enti.x - entioriginx, enti.y - entioriginy, entiwidth, entiheight);
+                        }
+                        
+                    }
+                    
+                    case 3 -> {
+                        if (MOUSE_IS_HELD)
+                        {
+                            MAP_ENTITIES.remove(i);
+                        }
+                        g.setColor(Color.WHITE);
+                        g.fillRect(enti.x - entioriginx, enti.y - entioriginy, entiwidth, entiheight);
+                    }
+                }    
+
+            }
+            BT_Sprite img = Entity_Images[enti.id][enti.type];
+            g.drawImage(img.image, enti.x - img.x, enti.y - img.y, this);
+            
+        }
+        
     }
     
     private void clear_screen()
     {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 480, 360);
-        draw_barriers();
+        
+        if (GRID_TOGGLE)
+        {
+            g.setColor(new Color(80, 80, 80));
+            for (int x = 0; x < 60; x++)
+            {
+                switch (x)
+                {
+                    default -> g.drawLine(x * 8, 0, x * 8, 360);
+                    
+                    case 30 -> {
+                        g.setColor(new Color(120, 120, 120));
+                        g.drawLine(x * 8, 0, x * 8, 360);
+                        g.setColor(new Color(80, 80, 80));
+                    }
+                }
+                
+            }
+            
+            for (int y = 0; y < 45; y++)
+            {
+                switch (y)
+                {
+                    default -> g.drawLine(0, y * 8, 480, y * 8);
+                    
+                    case 22 -> {
+                        g.setColor(new Color(120, 120, 120));
+                        g.drawLine(0, y * 8, 480, y * 8);
+                        g.setColor(new Color(80, 80, 80));
+                    }
+                }
+                
+            }
+        }
+        
+        draw_viewer();
         Point thepoint = map_view_panel.getMousePosition();
         if (thepoint == null)
         {
@@ -787,29 +1047,81 @@ public class BTME2UI extends javax.swing.JFrame {
         g.setColor(COLORLIST[CURRENT_COLOR]);
         switch (CURRENT_MODE)
         {
-            default -> {g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);}
-            case 3 -> {}
-            case 4 -> {}
-            case 5 -> {}
-        }
-        
-        switch (CURRENT_MODE)
-        {
-            
-            case 6 ->
+            // SELECT TOOL
+            case 0 ->
             {
-                if (vert_wall_buffer != null)
+                if (SELECT_BUFFER == null && MOUSE_IS_HELD)
                 {
-                    vert_wall_buffer.width = 8; //(int) (java.lang.Math.ceil((mousepoint.x - vert_wall_buffer.x)/8)*8);
-                    vert_wall_buffer.height = (int) (java.lang.Math.floor((mousePosition.y - vert_wall_buffer.y)/8)*8) + 8;
-                    g.setColor(COLORLIST[CURRENT_COLOR]);
-                    g.fillRect(vert_wall_buffer.x, vert_wall_buffer.y, 8, vert_wall_buffer.height);
+                    SELECTIONS_BUFFER.clear();
+                    SELECT_BUFFER = new SELECT_TOOL_BUFFER(mousePosition.x, mousePosition.y);
+                }
+                
+                if (SELECT_BUFFER != null)
+                {
+                    SELECT_BUFFER.width = mousePosition.x - SELECT_BUFFER.startx;
+                    SELECT_BUFFER.height = mousePosition.y - SELECT_BUFFER.starty;
+                    g.setColor(Color.WHITE);
+                    g.drawRect(SELECT_BUFFER.startx, SELECT_BUFFER.starty, SELECT_BUFFER.width, SELECT_BUFFER.height);   
+                }
+                
+                if (!MOUSE_IS_HELD && SELECT_BUFFER != null)
+                {
+                    for (int i = 0; i < MAP_BARRIERS.size(); i++)
+                    {
+                        BT_Barrier barr = MAP_BARRIERS.get(i);
+                        if (is_barrier_hitting_selection(barr))
+                        {
+                            SELECTIONS_BUFFER.add(barr);
+                            System.out.println("SELECTED " + barr);
+                        }
+                    }
+                    
+                    for (int i = 0; i < MAP_ENTITIES.size(); i++)
+                    {
+                        BT_Entity enti = MAP_ENTITIES.get(i);
+                        if (is_entity_hitting_selection(enti))
+                        {
+                            SELECTIONS_BUFFER.add(enti);
+                            System.out.println("SELECTED " + enti);
+                        }
+                    }
+                    
+                    SELECT_BUFFER = null;
                 }
                 
             }
             
-            case 7 ->
-            {
+            // WALL
+            case 2 -> {
+                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+                boolean canplace = canbeplaced();
+                if (canplace && MOUSE_IS_HELD && MOUSE_PRESSED_TYPE != 3)
+                {
+                    MAP_BARRIERS.add(new BT_Barrier((mousePosition.x/8)*8, (mousePosition.y/8)*8, 8, 8, CURRENT_COLOR));
+                }
+            }
+            
+            // STAMP
+            case 5 -> {
+                BT_Sprite img = Entity_Images[CURRENT_ENTITY][CURRENT_ENTITY_TYPE];
+                g.drawImage(img.image, ((mousePosition.x/8) * 8) - img.x, ((mousePosition.y/8) * 8) - img.y, this);
+            }
+            
+            // VERTICAL WALL
+            case 6 -> {
+                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
+                if (vert_wall_buffer != null)
+                {
+                    vert_wall_buffer.width = 8;
+                    vert_wall_buffer.height = (int) (java.lang.Math.floor((mousePosition.y - vert_wall_buffer.y)/8)*8) + 8;
+                    g.setColor(COLORLIST[CURRENT_COLOR]);
+                    g.fillRect(vert_wall_buffer.x, vert_wall_buffer.y, 8, vert_wall_buffer.height);
+                }
+            }
+            
+            // HORIZONTAL WALL 
+            case 7 -> {
+                g.drawRect((mousePosition.x/8) * 8, (mousePosition.y/8) * 8, 8, 8);
                 if (hori_wall_buffer != null)
                 {
                     hori_wall_buffer.width = (int) (java.lang.Math.floor((mousePosition.x - hori_wall_buffer.x)/8)*8) + 8;
@@ -817,9 +1129,8 @@ public class BTME2UI extends javax.swing.JFrame {
                     g.setColor(COLORLIST[CURRENT_COLOR]);
                     g.fillRect(hori_wall_buffer.x, hori_wall_buffer.y, hori_wall_buffer.width, 8);
                 }
-                
             }
-
+            
         }
         
         mvg.drawImage(bi, 0, 0, this);
@@ -869,9 +1180,9 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JButton btn_objects;
     private javax.swing.JToggleButton btn_pencil;
     private javax.swing.JToggleButton btn_select;
-    private javax.swing.JToggleButton btn_stamp;
+    public static javax.swing.JToggleButton btn_stamp;
     private javax.swing.JToggleButton btn_vertline;
-    private javax.swing.ButtonGroup buttonGroup2;
+    public static javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JMenu edit;
     private javax.swing.JMenuItem exportmap;
     private javax.swing.JMenu file;
@@ -879,9 +1190,11 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private static javax.swing.JLabel jLabel3;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel map_view_panel;
