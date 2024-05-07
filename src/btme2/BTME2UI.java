@@ -20,6 +20,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.imageio.ImageIO;
 import java.io.IOException; 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Scanner; 
 
 import javax.sound.sampled.AudioInputStream; 
@@ -41,7 +44,7 @@ public class BTME2UI extends javax.swing.JFrame {
      */
     public static String MAP_NAME = "PLACE";
     
-    private byte HEADER[] = {'B', 'T', 'M', 'v', 2, 0, 0, 0};
+    public static byte HEADER[] = {'B', 'T', 'M', 'v', 2, 0, 0, 0};
     
     public static LinkedList<BT_Barrier> MAP_BARRIERS = new LinkedList<>();
     public static LinkedList<BT_Entity> MAP_ENTITIES = new LinkedList<>();
@@ -477,6 +480,11 @@ public class BTME2UI extends javax.swing.JFrame {
         importmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         importmap.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         importmap.setText("Import Map");
+        importmap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importmapActionPerformed(evt);
+            }
+        });
         file.add(importmap);
 
         exportmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -849,6 +857,98 @@ public class BTME2UI extends javax.swing.JFrame {
         about.setLocationRelativeTo(null);
         about.setVisible(true);        // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void importmapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importmapActionPerformed
+        JFileChooser filechooser = new JFileChooser();
+        filechooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        int result = filechooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = filechooser.getSelectedFile();
+            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+            
+            try {
+                // LOAD THE MAP
+                byte[] mapcontents = Files.readAllBytes(selectedFile.toPath());
+                
+                if (mapcontents.length < HEADER.length)
+                {
+                    System.out.println("HEADER DOES NOT MATCH");
+                    BTME2UI.changealert("Invalid File");
+                    return;
+                }
+                
+                for (int i = 0; i < BTME2UI.HEADER.length; i++)
+                {
+                    if (mapcontents[i] != BTME2UI.HEADER[i])
+                    {
+                        System.out.println("HEADER DOES NOT MATCH");
+                        BTME2UI.changealert("Invalid File");
+                        return;
+                    }
+                }
+                
+                int barrier_amount, entity_amount, name_length,
+                    barrier_offset, entity_offset;
+                
+                barrier_amount = mapcontents[9] + (mapcontents[8] << 8);
+
+                entity_amount = mapcontents[11] + (mapcontents[10] << 8);
+                
+                name_length = mapcontents[12];
+                
+                barrier_offset = 13 + name_length;
+                
+                entity_offset = barrier_offset + (barrier_amount * 9);
+                
+                MAP_BARRIERS.clear();
+                MAP_ENTITIES.clear();
+                MAP_NAME = "";
+                
+                byte[] namearr = new byte[name_length];
+                
+                
+                for (int i = 0; i < (name_length); i++)
+                {
+                    namearr[i] = mapcontents[13 + i];
+                }
+                
+                MAP_NAME = new String(namearr, StandardCharsets.UTF_8);
+                NameEntry.mapnameentry.setText(BTME2UI.MAP_NAME);
+                
+                // LOAD BARRIERS
+                
+                for (int i = 0; i < barrier_amount; i++)
+                {
+                    int addx = 8 * mapcontents[barrier_offset + (i * 9) + 1] + (mapcontents[barrier_offset + (i * 9)] << 8);
+                    int addy = 8 * mapcontents[barrier_offset + (i * 9) + 3] + (mapcontents[barrier_offset + (i * 9) + 2] << 8);
+                    int addw = 8 * mapcontents[barrier_offset + (i * 9) + 5] + (mapcontents[barrier_offset + (i * 9) + 4] << 8);
+                    int addh = 8 * mapcontents[barrier_offset + (i * 9) + 7] + (mapcontents[barrier_offset + (i * 9) + 6] << 8);
+                    int addc = mapcontents[barrier_offset + (i * 9) + 8];
+                    MAP_BARRIERS.add(new BT_Barrier(addx, addy, addw, addh, addc));
+                    System.out.println(addc);
+                }
+                
+                // LOAD ENTITIES
+                /*
+                for (int i = 0; i < entity_amount; i++)
+                {
+                    int addx = 8 * mapcontents[entity_offset + (i * 6) + 1] + (mapcontents[entity_offset + (i * 6)] << 8);
+                    int addy = 8 * mapcontents[entity_offset + (i * 6) + 3] + (mapcontents[entity_offset + (i * 6) + 2] << 8);
+                    int addi = mapcontents[entity_amount + (i * 6) + 4];
+                    int addt = mapcontents[entity_offset + (i * 6) + 5];
+                    MAP_ENTITIES.add(new BT_Entity(addx, addy, addi, addt));
+                    System.out.println(addx + " " + addy + " " + addi + " " + addt);
+                }*/
+                
+                System.out.println("LOADED MAP!");
+                BTME2UI.changealert("Map Loaded: " + MAP_NAME);
+                
+            } catch (IOException ex) {
+                Logger.getLogger(BTME2UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+    }//GEN-LAST:event_importmapActionPerformed
 
     private boolean is_barrier_hitting_selection(BT_Barrier barr)
     {

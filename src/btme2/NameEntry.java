@@ -216,6 +216,6 @@ public class NameEntry extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField mapnameentry;
+    public static javax.swing.JTextField mapnameentry;
     // End of variables declaration//GEN-END:variables
 }

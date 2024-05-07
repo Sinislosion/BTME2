@@ -31,8 +31,11 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.ImageIcon;
@@ -49,6 +52,11 @@ public class BTME2_About extends javax.swing.JFrame {
     
     Image cursorimg;
     Cursor amicursor;
+    
+    Duration deltaTime = Duration.ZERO;
+    Instant beginTime = Instant.now();
+    
+    LinkedList<ABOUT_STARS> STAR_LIST = new LinkedList();
     
     /** Creates new form BTME2_About */
     public BTME2_About() {
@@ -68,16 +76,35 @@ public class BTME2_About extends javax.swing.JFrame {
         g = bi.createGraphics();
         mvg = jPanel1.getGraphics();
         
+        for (int i = 0; i < jPanel1.getSize().height; i++)
+        {
+            STAR_LIST.add(new ABOUT_STARS(new Random().nextInt(jPanel1.getSize().width + 4), i));
+        }
+        
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask(){
             
             @Override
             public void run() {
-                stars();            
+                stars();         
+                deltaTime = Duration.between(beginTime, Instant.now());
+                beginTime = Instant.now();
             }
             
         }, 0, 1);
         
+        Timer startimer = new Timer();
+        startimer.scheduleAtFixedRate(new TimerTask(){
+            @Override
+            public void run() {
+                
+                for (int i = 0; i < STAR_LIST.size(); i++)
+                {
+                    ABOUT_STARS star = STAR_LIST.get(i);
+                    star.Main(deltaTime, jPanel1.getWidth());
+                }
+            }
+        }, 0, 16);
     }
 
     /** This method is called from within the constructor to
@@ -89,10 +116,9 @@ public class BTME2_About extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jToggleButton2 = new javax.swing.JToggleButton();
         jPanel1 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("About");
         setAlwaysOnTop(true);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -100,19 +126,19 @@ public class BTME2_About extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(472, 284));
         setResizable(false);
 
-        jToggleButton2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
-        jToggleButton2.setText("Alright!");
-        jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton2ActionPerformed(evt);
-            }
-        });
-
         jPanel1.setBackground(new java.awt.Color(51, 102, 255));
         jPanel1.setMaximumSize(new java.awt.Dimension(460, 260));
         jPanel1.setMinimumSize(new java.awt.Dimension(460, 260));
         jPanel1.setPreferredSize(new java.awt.Dimension(460, 260));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jButton1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jButton1.setText("Alright!");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -121,11 +147,12 @@ public class BTME2_About extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(179, 179, 179)
-                        .addComponent(jToggleButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(44, 44, 44)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, Short.MAX_VALUE)))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(179, 179, 179)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(48, 48, 48))
         );
         layout.setVerticalGroup(
@@ -133,25 +160,40 @@ public class BTME2_About extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(8, 8, 8)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jToggleButton2)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        hide();        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void stars()
     {
         g.setColor(new Color(0x442ff3));
         g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
+        
+        g.setColor(Color.WHITE);
+        for (int i = 0; i < STAR_LIST.size(); i++)
+        {
+            ABOUT_STARS star = STAR_LIST.get(i);
+            g.setColor(new Color(255, 255, 255, 255));
+            g.drawLine(star.x, star.y, star.x, star.y);
+            g.setColor(new Color(255, 255, 255, 128));
+            g.drawLine(star.x + 1, star.y, star.x, star.y);
+            g.setColor(new Color(255, 255, 255, 64));
+            g.drawLine(star.x + 2, star.y, star.x, star.y);
+            g.setColor(new Color(255, 255, 255, 32));
+            g.drawLine(star.x + 3, star.y, star.x, star.y);
+        }
+        
         mvg.drawImage(bi, 0, 0, this);
     }
     
-    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
-        dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton2ActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -188,8 +230,8 @@ public class BTME2_About extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JToggleButton jToggleButton2;
     // End of variables declaration//GEN-END:variables
 
 }

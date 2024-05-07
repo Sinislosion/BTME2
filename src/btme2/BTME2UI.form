@@ -33,6 +33,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Import Map"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="importmapActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exportmap">
               <Properties>
