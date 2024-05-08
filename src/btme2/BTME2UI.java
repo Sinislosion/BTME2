@@ -784,6 +784,14 @@ public class BTME2UI extends javax.swing.JFrame {
 
     private void exportmapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportmapActionPerformed
         try {
+            
+            File oldsavedmap = new File(MAP_NAME + ".btm"); 
+            if (oldsavedmap.delete()) { 
+              System.out.println("Deleted the file: " + oldsavedmap.getName());
+            } else {
+              System.out.println("Failed to delete the file: " + oldsavedmap.getName());
+            } 
+            
             FileOutputStream savedmap = new FileOutputStream(MAP_NAME + ".btm");
             savedmap.write(HEADER);
             
@@ -925,7 +933,6 @@ public class BTME2UI extends javax.swing.JFrame {
                     int addh = 8 * mapcontents[barrier_offset + (i * 9) + 7] + (mapcontents[barrier_offset + (i * 9) + 6] << 8);
                     int addc = mapcontents[barrier_offset + (i * 9) + 8];
                     MAP_BARRIERS.add(new BT_Barrier(addx, addy, addw, addh, addc));
-                    System.out.println(addc);
                 }
                 
                 // LOAD ENTITIES
