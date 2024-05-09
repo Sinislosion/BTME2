@@ -796,11 +796,11 @@ public class BTME2UI extends javax.swing.JFrame {
             savedmap.write(HEADER);
             
             int amountOfBarrier = MAP_BARRIERS.size();
-            savedmap.write(amountOfBarrier >> 8);
+            savedmap.write(amountOfBarrier >>> 8);
             savedmap.write(amountOfBarrier);
             
             int amountOfEntity = MAP_ENTITIES.size();
-            savedmap.write(amountOfEntity >> 8);
+            savedmap.write(amountOfEntity >>> 8);
             savedmap.write(amountOfEntity);
             
             savedmap.write(MAP_NAME.length());
@@ -815,16 +815,16 @@ public class BTME2UI extends javax.swing.JFrame {
             
             for (int i = 0; i < MAP_BARRIERS.size(); i++)
             {
-                savedmap.write(((MAP_BARRIERS.get(i).x) / 8) >> 8);
+                savedmap.write(((MAP_BARRIERS.get(i).x) / 8) >>> 8);
                 savedmap.write((MAP_BARRIERS.get(i).x) / 8);
                 
-                savedmap.write(((MAP_BARRIERS.get(i).y) / 8) >> 8);
+                savedmap.write(((MAP_BARRIERS.get(i).y) / 8) >>> 8);
                 savedmap.write((MAP_BARRIERS.get(i).y) / 8);
                 
-                savedmap.write(((MAP_BARRIERS.get(i).width) / 8) >> 8);
+                savedmap.write(((MAP_BARRIERS.get(i).width) / 8) >>> 8);
                 savedmap.write((MAP_BARRIERS.get(i).width) / 8);
                 
-                savedmap.write(((MAP_BARRIERS.get(i).height) / 8) >> 8);
+                savedmap.write(((MAP_BARRIERS.get(i).height) / 8) >>> 8);
                 savedmap.write((MAP_BARRIERS.get(i).height) / 8);
                 
                 savedmap.write(MAP_BARRIERS.get(i).color);
@@ -832,10 +832,10 @@ public class BTME2UI extends javax.swing.JFrame {
             
             for (int i = 0; i < MAP_ENTITIES.size(); i++)
             {
-                savedmap.write(((MAP_ENTITIES.get(i).x) / 8) >> 8);
+                savedmap.write(((MAP_ENTITIES.get(i).x) / 8) >>> 8);
                 savedmap.write((MAP_ENTITIES.get(i).x) / 8);
                 
-                savedmap.write(((MAP_ENTITIES.get(i).y) / 8) >> 8);
+                savedmap.write(((MAP_ENTITIES.get(i).y) / 8) >>> 8);
                 savedmap.write((MAP_ENTITIES.get(i).y) / 8);
                 
                 savedmap.write(MAP_ENTITIES.get(i).id);
@@ -936,16 +936,16 @@ public class BTME2UI extends javax.swing.JFrame {
                 }
                 
                 // LOAD ENTITIES
-                /*
+                
                 for (int i = 0; i < entity_amount; i++)
                 {
-                    int addx = 8 * mapcontents[entity_offset + (i * 6) + 1] + (mapcontents[entity_offset + (i * 6)] << 8);
-                    int addy = 8 * mapcontents[entity_offset + (i * 6) + 3] + (mapcontents[entity_offset + (i * 6) + 2] << 8);
-                    int addi = mapcontents[entity_amount + (i * 6) + 4];
+                    int addx = 8 * (mapcontents[entity_offset + (i * 6) + 1] + (mapcontents[entity_offset + (i * 6)] << 8));
+                    int addy = 8 * (mapcontents[entity_offset + (i * 6) + 3] + (mapcontents[entity_offset + (i * 6) + 2] << 8));
+                    int addi = mapcontents[entity_offset + (i * 6) + 4];
                     int addt = mapcontents[entity_offset + (i * 6) + 5];
                     MAP_ENTITIES.add(new BT_Entity(addx, addy, addi, addt));
-                    System.out.println(addx + " " + addy + " " + addi + " " + addt);
-                }*/
+                    System.out.println(addi + ", " + addt);
+                }
                 
                 System.out.println("LOADED MAP!");
                 BTME2UI.changealert("Map Loaded: " + MAP_NAME);
