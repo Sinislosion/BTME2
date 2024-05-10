@@ -263,14 +263,19 @@ public class BTME2UI extends javax.swing.JFrame {
         setAutoRequestFocus(false);
         setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         setForeground(java.awt.Color.white);
+        setMaximumSize(new java.awt.Dimension(720, 540));
+        setMinimumSize(new java.awt.Dimension(720, 540));
         setName("B-TRON MAP EDITOR 2"); // NOI18N
         setPreferredSize(new java.awt.Dimension(720, 540));
         setResizable(false);
+        setSize(new java.awt.Dimension(720, 540));
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
         jPanel1.setCursor(amicursor);
         jPanel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jPanel1.setMaximumSize(new java.awt.Dimension(720, 540));
+        jPanel1.setMinimumSize(new java.awt.Dimension(720, 540));
         jPanel1.setPreferredSize(new java.awt.Dimension(720, 540));
         jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -555,11 +560,11 @@ public class BTME2UI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
