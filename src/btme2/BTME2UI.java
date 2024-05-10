@@ -170,6 +170,21 @@ public class BTME2UI extends javax.swing.JFrame {
             filepath = "btron-assets/btron-verticaldoor-purple.png";
             Entity_Images[2][5] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
             
+            filepath = "btron-assets/btron-key-default.png";
+            Entity_Images[4][0] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-red.png";
+            Entity_Images[4][1] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-green.png";
+            Entity_Images[4][2] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-blue.png";
+            Entity_Images[4][3] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-yellow.png";
+            Entity_Images[4][4] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
             
         } catch (IOException ex) {
             Logger.getLogger(BTME2UI.class.getName()).log(Level.SEVERE, null, ex);
@@ -949,7 +964,6 @@ public class BTME2UI extends javax.swing.JFrame {
                     int addi = mapcontents[entity_offset + (i * 6) + 4];
                     int addt = mapcontents[entity_offset + (i * 6) + 5];
                     MAP_ENTITIES.add(new BT_Entity(addx, addy, addi, addt));
-                    System.out.println(addi + ", " + addt);
                 }
                 
                 System.out.println("LOADED MAP!");

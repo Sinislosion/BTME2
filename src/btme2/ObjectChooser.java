@@ -215,19 +215,24 @@ public class ObjectChooser extends javax.swing.JFrame {
         
         switch (jList1.getSelectedIndex())
         {
-            default:
-                modstrings.add("DEFAULT");
-            break;
+            default -> modstrings.add("DEFAULT");
             
-            case 2:
-                case 3:
-                    modstrings.add("WHITE DOOR");
-                    modstrings.add("RED DOOR");
-                    modstrings.add("GREEN DOOR");
-                    modstrings.add("BLUE DOOR");
-                    modstrings.add("YELLOW DOOR");
-                    modstrings.add("PURPLE DOOR");
-                break;
+            case 2, 3 -> {
+                modstrings.add("WHITE DOOR");
+                modstrings.add("RED DOOR");
+                modstrings.add("GREEN DOOR");
+                modstrings.add("BLUE DOOR");
+                modstrings.add("YELLOW DOOR");
+                modstrings.add("PURPLE DOOR");
+            }
+            
+            case 4 -> {
+                modstrings.add("DEFAULT KEY");
+                modstrings.add("RED KEY");
+                modstrings.add("GREEN KEY");
+                modstrings.add("BLUE KEY");
+                modstrings.add("YELLOW KEY");
+            }
         }
         
         Object[] objarray = modstrings.toArray();
