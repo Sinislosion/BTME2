@@ -80,11 +80,11 @@ public class ObjectChooser extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Choose an Object");
         setAlwaysOnTop(true);
-        setBackground(new java.awt.Color(102, 102, 102));
+        setBackground(new java.awt.Color(0, 0, 153));
         setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         setResizable(false);
 
-        jList1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jList1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "PLAYER", "CAMERA", "VERTICAL DOOR", "HORIZONTAL DOOR", "KEY" };
             public int getSize() { return strings.length; }
@@ -108,7 +108,7 @@ public class ObjectChooser extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jList1);
 
-        jList2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jList2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jList2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jList2.setToolTipText("");
         jList2.setMaximumSize(new java.awt.Dimension(132, 70));
@@ -132,10 +132,10 @@ public class ObjectChooser extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jLabel1.setText("Choose an Object");
 
-        jLabel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jLabel2.setText("Choose a Value");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -173,7 +173,7 @@ public class ObjectChooser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
