@@ -23,7 +23,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Scanner; 
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.sound.sampled.AudioInputStream; 
 import javax.sound.sampled.AudioSystem; 
@@ -93,6 +94,10 @@ public class BTME2UI extends javax.swing.JFrame {
     
     public static SELECT_TOOL_BUFFER SELECT_BUFFER = null;
     public boolean GRID_TOGGLE = false;
+    public ArrayList<LinkedList<BT_Barrier>> UndoHistoryBarrier = new ArrayList<LinkedList<BT_Barrier>>();
+    public LinkedList UndoHistoryEntities[] = { MAP_ENTITIES };
+    public int undoIndex = 0;
+    public int lastTimeTravel = 2; //0-Undo, 1-Redo, 2-None
     
     /**
      * Creates new form BTME2UI
@@ -121,6 +126,10 @@ public class BTME2UI extends javax.swing.JFrame {
         for (UIManager.LookAndFeelInfo look : looks) {
             System.out.println(look.getClassName());
         }
+        
+         //making shit NOT grey
+         UIManager.put("ToggleButton.select", new Color(67, 52, 163));
+         UIManager.put("Button.select", new Color(67, 52, 163));
         
         // netbeans sstuff
         initComponents();
@@ -170,6 +179,21 @@ public class BTME2UI extends javax.swing.JFrame {
             filepath = "btron-assets/btron-verticaldoor-purple.png";
             Entity_Images[2][5] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
             
+            filepath = "btron-assets/btron-key-default.png";
+            Entity_Images[4][0] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-red.png";
+            Entity_Images[4][1] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-green.png";
+            Entity_Images[4][2] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-blue.png";
+            Entity_Images[4][3] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
+            filepath = "btron-assets/btron-key-yellow.png";
+            Entity_Images[4][4] = new BT_Sprite(ImageIO.read(getClass().getResource(filepath)));
+            
             
         } catch (IOException ex) {
             Logger.getLogger(BTME2UI.class.getName()).log(Level.SEVERE, null, ex);
@@ -213,6 +237,78 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel3.setForeground(new Color (255, 255, 255, labelopacity));
     }
     
+    public void addundostate()
+    {
+        if (lastTimeTravel < 2) //user has fucked up our timeline; let's fix it!
+        {
+            if (lastTimeTravel == 0) {
+            UndoHistoryBarrier.subList(undoIndex + 1, UndoHistoryBarrier.size()).clear(); //undoIndex will always be 1 less than what we're on
+            }
+            if (lastTimeTravel == 1) {
+            UndoHistoryBarrier.subList(undoIndex, UndoHistoryBarrier.size()).clear(); //undoIndex will be what we're on
+            }
+        }
+        if (UndoHistoryBarrier.size() - 1 != -1 && lastTimeTravel == 2) //we ALREADY removed current state if last move was re/undo :3
+        {
+        UndoHistoryBarrier.remove(UndoHistoryBarrier.size() - 1); //removing current state, no longer needed :D
+        }
+        UndoHistoryBarrier.add((LinkedList) MAP_BARRIERS.clone());
+        undo.setEnabled(true);
+    }
+    
+    public void addundopost()
+    {
+        UndoHistoryBarrier.add((LinkedList) MAP_BARRIERS.clone());
+        undoIndex = UndoHistoryBarrier.size() - 2;
+        System.out.println(undoIndex);
+        if (lastTimeTravel == 0)
+        {
+        lastTimeTravel = 2;
+        redoFunction(); //shhhh don't let them know about the jank...
+        return;
+        }
+        lastTimeTravel = 2;
+    }
+    
+    public void undoFunction()
+    {
+        if (lastTimeTravel == 1)
+        {
+            undoIndex--;
+        }
+        jMenuItem1.setEnabled(true); //if we undid something, there has to be something to redo
+        MAP_BARRIERS = UndoHistoryBarrier.get(undoIndex);
+        if (undoIndex - 1 != -1)
+        {
+            undoIndex--;
+        }
+        else
+        {
+            undoIndex--;
+            undo.setEnabled(false);
+        }
+        System.out.println(undoIndex);
+        lastTimeTravel = 0;
+    }
+    
+    public void redoFunction()
+    {
+        undoIndex++;
+        if (lastTimeTravel == 0)
+        {
+            undoIndex++;
+        }
+        undo.setEnabled(true); //if we redid something, there has to be something to undo
+        System.out.println(undoIndex);
+        MAP_BARRIERS = UndoHistoryBarrier.get(undoIndex);
+        System.out.println(MAP_BARRIERS);
+        if (undoIndex + 1 > UndoHistoryBarrier.size() - 1)
+        {
+            jMenuItem1.setEnabled(false);
+        }
+        lastTimeTravel = 1;
+    }
+    
     public static void changealert(String message)
     {
         BTME2UI.labelopacity = 255;
@@ -220,6 +316,16 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel3.setText(message);
         jLabel3.setForeground(new Color (255, 255, 255, labelopacity));
     }
+    
+    private void changeBorders() {                                     
+        btn_select.setBorder(javax.swing.BorderFactory.createBevelBorder((CURRENT_MODE == 0) ? 1 : 0));
+        btn_pencil.setBorder(javax.swing.BorderFactory.createBevelBorder((CURRENT_MODE == 2) ? 1 : 0));
+        btn_delete.setBorder(javax.swing.BorderFactory.createBevelBorder((CURRENT_MODE == 3) ? 1 : 0));
+        btn_move.setBorder(javax.swing.BorderFactory.createBevelBorder((CURRENT_MODE == 4) ? 1 : 0));
+        btn_stamp.setBorder(javax.swing.BorderFactory.createBevelBorder((CURRENT_MODE == 5) ? 1 : 0));
+        btn_vertline.setBorder(javax.swing.BorderFactory.createBevelBorder((CURRENT_MODE == 6) ? 1 : 0));
+        btn_horiline.setBorder(javax.swing.BorderFactory.createBevelBorder((CURRENT_MODE == 7) ? 1 : 0));
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -247,6 +353,7 @@ public class BTME2UI extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         menubar = new javax.swing.JMenuBar();
         file = new javax.swing.JMenu();
         importmap = new javax.swing.JMenuItem();
@@ -266,11 +373,10 @@ public class BTME2UI extends javax.swing.JFrame {
         setMaximumSize(new java.awt.Dimension(720, 540));
         setMinimumSize(new java.awt.Dimension(720, 540));
         setName("B-TRON MAP EDITOR 2"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(720, 540));
         setResizable(false);
         setSize(new java.awt.Dimension(720, 540));
 
-        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel1.setBackground(new java.awt.Color(51, 0, 204));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
         jPanel1.setCursor(amicursor);
         jPanel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
@@ -292,8 +398,12 @@ public class BTME2UI extends javax.swing.JFrame {
         jPanel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jPanel2.setLayout(new java.awt.GridLayout(1, 1));
 
+        btn_select.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_select);
         btn_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/select.png"))); // NOI18N
+        btn_select.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_select.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_select.setFocusPainted(false);
         btn_select.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_select.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_select.setPreferredSize(new java.awt.Dimension(32, 32));
@@ -304,8 +414,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_select);
 
+        btn_objects.setBackground(new java.awt.Color(153, 153, 255));
         btn_objects.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/objects.png"))); // NOI18N
+        btn_objects.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonGroup2.add(btn_objects);
+        btn_objects.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_objects.setFocusPainted(false);
         btn_objects.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn_objects.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_objects.setMinimumSize(new java.awt.Dimension(32, 32));
@@ -317,12 +431,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_objects);
 
+        btn_pencil.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_pencil);
         btn_pencil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/penis.png"))); // NOI18N
-        btn_pencil.setSelected(true);
-        btn_pencil.setMaximumSize(new java.awt.Dimension(32, 32));
-        btn_pencil.setMinimumSize(new java.awt.Dimension(32, 32));
-        btn_pencil.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_pencil.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        btn_pencil.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_pencil.setFocusPainted(false);
         btn_pencil.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_pencilActionPerformed(evt);
@@ -330,11 +444,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_pencil);
 
+        btn_delete.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_delete);
         btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/delete.png"))); // NOI18N
-        btn_delete.setMaximumSize(new java.awt.Dimension(32, 32));
-        btn_delete.setMinimumSize(new java.awt.Dimension(32, 32));
-        btn_delete.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_delete.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_delete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_delete.setFocusPainted(false);
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_deleteActionPerformed(evt);
@@ -342,8 +457,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_delete);
 
+        btn_move.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_move);
         btn_move.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/move.png"))); // NOI18N
+        btn_move.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_move.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_move.setFocusPainted(false);
         btn_move.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_move.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_move.setPreferredSize(new java.awt.Dimension(32, 32));
@@ -354,8 +473,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_move);
 
+        btn_stamp.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_stamp);
         btn_stamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/stamp.png"))); // NOI18N
+        btn_stamp.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_stamp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_stamp.setFocusPainted(false);
         btn_stamp.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_stamp.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_stamp.setPreferredSize(new java.awt.Dimension(32, 32));
@@ -366,8 +489,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_stamp);
 
+        btn_vertline.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_vertline);
         btn_vertline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/vert-line.png"))); // NOI18N
+        btn_vertline.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_vertline.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_vertline.setFocusPainted(false);
         btn_vertline.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_vertline.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_vertline.setPreferredSize(new java.awt.Dimension(32, 32));
@@ -378,8 +505,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_vertline);
 
+        btn_horiline.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_horiline);
         btn_horiline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/hori-line.png"))); // NOI18N
+        btn_horiline.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_horiline.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_horiline.setFocusPainted(false);
         btn_horiline.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_horiline.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_horiline.setPreferredSize(new java.awt.Dimension(32, 32));
@@ -390,8 +521,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel2.add(btn_horiline);
 
+        btn_name.setBackground(new java.awt.Color(153, 153, 255));
         btn_name.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/text.png"))); // NOI18N
+        btn_name.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonGroup2.add(btn_name);
+        btn_name.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_name.setFocusPainted(false);
         btn_name.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn_name.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_name.setMinimumSize(new java.awt.Dimension(32, 32));
@@ -450,15 +585,17 @@ public class BTME2UI extends javax.swing.JFrame {
 
         jPanel1.add(map_view_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 70, -1, -1));
 
-        jLabel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Border Color");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 440, 110, -1));
 
-        jComboBox1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jComboBox1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Black", "Red", "Orange", "Yellow", "Green", "Blue", "Violet" }));
         jComboBox1.setSelectedIndex(5);
+        jComboBox1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jComboBox1.setRequestFocusEnabled(false);
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -466,25 +603,34 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 110, -1));
 
-        jLabel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Viewer");
+        jLabel2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(153, 153, 255));
+        jLabel2.setText("Version 2.0.0 -NOMAD");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, -1, -1));
 
-        jLabel3.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Initialized");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 470, -1, -1));
 
+        jLabel4.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("B-TRON MAP EDITOR");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, -1, -1));
+
+        menubar.setBackground(new java.awt.Color(102, 102, 255));
         menubar.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
         menubar.setName("Menu"); // NOI18N
 
+        file.setForeground(new java.awt.Color(0, 0, 102));
         file.setText("File");
-        file.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        file.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        file.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
 
         importmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        importmap.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
-        importmap.setText("Import Map");
+        importmap.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        importmap.setText("<HTML><U>I</U>mport Map</HTML>");
+        importmap.setToolTipText("");
         importmap.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 importmapActionPerformed(evt);
@@ -493,8 +639,8 @@ public class BTME2UI extends javax.swing.JFrame {
         file.add(importmap);
 
         exportmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        exportmap.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
-        exportmap.setText("Export Map");
+        exportmap.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        exportmap.setText("<HTML><U>E</U>xport Map</HTML>");
         exportmap.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportmapActionPerformed(evt);
@@ -503,7 +649,7 @@ public class BTME2UI extends javax.swing.JFrame {
         file.add(exportmap);
 
         jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-        jMenuItem4.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem4.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jMenuItem4.setText("About");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -514,11 +660,15 @@ public class BTME2UI extends javax.swing.JFrame {
 
         menubar.add(file);
 
+        edit.setForeground(new java.awt.Color(0, 0, 102));
         edit.setText("Edit");
-        edit.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        edit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        edit.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
 
         undo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        undo.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        undo.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        undo.setToolTipText("Undo");
+        undo.setEnabled(false);
         undo.setLabel("Undo");
         undo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -528,8 +678,9 @@ public class BTME2UI extends javax.swing.JFrame {
         edit.add(undo);
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jMenuItem1.setText("Redo");
+        jMenuItem1.setEnabled(false);
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
@@ -539,11 +690,13 @@ public class BTME2UI extends javax.swing.JFrame {
 
         menubar.add(edit);
 
+        jMenu1.setForeground(new java.awt.Color(0, 0, 102));
         jMenu1.setText("View");
-        jMenu1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenu1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jMenu1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jMenuItem2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jMenuItem2.setText("Toggle Grid");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -560,22 +713,32 @@ public class BTME2UI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+<<<<<<< HEAD
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 521, Short.MAX_VALUE)
+=======
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+>>>>>>> bb6a6621c18a8f9d3cf15f6c78bf322033e8f767
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void undoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoActionPerformed
-        // TODO add your handling code here:
+        undoFunction();
+        changealert("Undid");
     }//GEN-LAST:event_undoActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
+        redoFunction();
+        changealert("Redid");
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jPanel1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseEntered
@@ -679,7 +842,17 @@ public class BTME2UI extends javax.swing.JFrame {
     }//GEN-LAST:event_map_view_panelMouseExited
 
     private void map_view_panelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseEntered
-        
+        switch (CURRENT_MODE)
+        {
+            
+            case 4 -> {
+            map_view_panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+            }
+            
+            default -> {
+            map_view_panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        }
     }//GEN-LAST:event_map_view_panelMouseEntered
 
     private void map_view_panelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseMoved
@@ -691,18 +864,21 @@ public class BTME2UI extends javax.swing.JFrame {
         System.out.println("PENCIL TOOL SELECTED");        // TODO add your handling code here:
         changealert("Pencil Tool Selected!");
         CURRENT_MODE = 2;
+        changeBorders();
     }//GEN-LAST:event_btn_pencilActionPerformed
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
         System.out.println("DELETE TOOL SELECTED"); // TODO add your handling code here:
         changealert("Delete Tool Selected!");
         CURRENT_MODE = 3;
+        changeBorders();
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void btn_selectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selectMouseClicked
         System.out.println("SELECT TOOL SELECTED");
         changealert("Select Tool Selected!");
-        CURRENT_MODE = 0;        // TODO add your handling code here:
+        CURRENT_MODE = 0; 
+        changeBorders();
     }//GEN-LAST:event_btn_selectMouseClicked
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
@@ -726,24 +902,28 @@ public class BTME2UI extends javax.swing.JFrame {
     private void btn_moveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_moveActionPerformed
         System.out.println("MOVE TOOL SELECTED");
         changealert("Move Tool Selected!");
-        CURRENT_MODE = 4;        // TODO add your handling code here:
+        CURRENT_MODE = 4;
+        changeBorders();
     }//GEN-LAST:event_btn_moveActionPerformed
 
     private void btn_stampActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_stampActionPerformed
         System.out.println("STAMP TOOL SELECTED");
         changealert("Stamp Tool Selected!");
-        CURRENT_MODE = 5;        // TODO add your handling code here:
+        CURRENT_MODE = 5;
+        changeBorders();
     }//GEN-LAST:event_btn_stampActionPerformed
 
     private void btn_vertlineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_vertlineActionPerformed
         System.out.println("VERTICAL LINE TOOL SELECTED");
         changealert("Vertical Line Tool Selected!");
-        CURRENT_MODE = 6;        // TODO add your handling code here:
+        CURRENT_MODE = 6; 
+        changeBorders();
     }//GEN-LAST:event_btn_vertlineActionPerformed
 
     private void btn_horilineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_horilineActionPerformed
         System.out.println("HORIZONTAL LINE TOOL SELECTED");
-        CURRENT_MODE = 7;        // TODO add your handling code here:
+        CURRENT_MODE = 7;
+        changeBorders();
     }//GEN-LAST:event_btn_horilineActionPerformed
 
     private void map_view_panelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseReleased
@@ -753,9 +933,11 @@ public class BTME2UI extends javax.swing.JFrame {
             {
                 if (vert_wall_buffer != null && vert_wall_buffer.height > 0)
                 {
+                    addundostate();
                     MAP_BARRIERS.add(vert_wall_buffer);
                     vert_wall_buffer = null;
                     System.out.println("WALL ADDED");
+                    addundopost();
                 }
                 else
                 {
@@ -767,8 +949,10 @@ public class BTME2UI extends javax.swing.JFrame {
             {
                 if (hori_wall_buffer != null && hori_wall_buffer.width > 0)
                 {
+                    addundostate();
                     MAP_BARRIERS.add(hori_wall_buffer);
                     hori_wall_buffer = null;
+                    addundopost();
                     System.out.println("WALL ADDED");
                 }
                 else
@@ -949,7 +1133,6 @@ public class BTME2UI extends javax.swing.JFrame {
                     int addi = mapcontents[entity_offset + (i * 6) + 4];
                     int addt = mapcontents[entity_offset + (i * 6) + 5];
                     MAP_ENTITIES.add(new BT_Entity(addx, addy, addi, addt));
-                    System.out.println(addi + ", " + addt);
                 }
                 
                 System.out.println("LOADED MAP!");
@@ -994,7 +1177,7 @@ public class BTME2UI extends javax.swing.JFrame {
             MOVE_BUFFER.y = (mousePosition.y / 8) * 8;
         }
         
-        if (!MOUSE_IS_HELD)
+        if (!MOUSE_IS_HELD && MOVE_BUFFER != null)
         {
             MOVE_BUFFER = null;
         }
@@ -1209,7 +1392,10 @@ public class BTME2UI extends javax.swing.JFrame {
                 boolean canplace = canbeplaced();
                 if (canplace && MOUSE_IS_HELD && MOUSE_PRESSED_TYPE != 3)
                 {
+                    addundostate();
                     MAP_BARRIERS.add(new BT_Barrier((mousePosition.x/8)*8, (mousePosition.y/8)*8, 8, 8, CURRENT_COLOR));
+                    addundopost();
+                    
                 }
             }
             
@@ -1303,6 +1489,7 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private static javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
