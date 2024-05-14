@@ -55,8 +55,8 @@ public class BTME2UI extends javax.swing.JFrame {
     public static int CURRENT_ENTITY_TYPE = 0;
     public static int IS_ON_VIEWER = 0;
     
-    public static int MAP_X = 0;
-    public static int MAP_Y = 0;
+    public static int MAP_X = 8;
+    public static int MAP_Y = 8;
     
     public static int MOUSE_PRESSED_TYPE = 0;
     
@@ -683,12 +683,12 @@ public class BTME2UI extends javax.swing.JFrame {
 
         jLabel6.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Y - 0");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, -1, -1));
+        jLabel6.setText("Y - 8");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("X - 0");
+        jLabel5.setText("X - 8");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
         menubar.setBackground(new java.awt.Color(102, 102, 255));
@@ -1210,22 +1210,34 @@ public class BTME2UI extends javax.swing.JFrame {
     }//GEN-LAST:event_importmapActionPerformed
 
     private void rightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightActionPerformed
-        MAP_X++;
+        if (MAP_X + 1 < 24)
+        {
+            MAP_X++;
+        }
         jLabel5.setText("X - " + MAP_X);
     }//GEN-LAST:event_rightActionPerformed
 
     private void leftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leftActionPerformed
-        MAP_X--;
+        if (MAP_X - 1 >= 0)
+        {
+            MAP_X--;
+        }
         jLabel5.setText("X - " + MAP_X);
     }//GEN-LAST:event_leftActionPerformed
 
     private void upActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upActionPerformed
-        MAP_Y--;
+        if (MAP_Y - 1 >= 0)
+        {
+            MAP_Y--;
+        }
         jLabel6.setText("Y - " + MAP_Y);
     }//GEN-LAST:event_upActionPerformed
 
     private void downActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downActionPerformed
-        MAP_Y++;
+        if (MAP_Y + 1 < 24)
+        {
+            MAP_Y++;
+        }
         jLabel6.setText("Y - " + MAP_Y);
     }//GEN-LAST:event_downActionPerformed
 
