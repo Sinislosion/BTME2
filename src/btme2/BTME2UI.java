@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package btme2;
 
 import java.awt.*;
@@ -57,6 +54,9 @@ public class BTME2UI extends javax.swing.JFrame {
     public static int CURRENT_ENTITY = 1;
     public static int CURRENT_ENTITY_TYPE = 0;
     public static int IS_ON_VIEWER = 0;
+    
+    public static int MAP_X = 0;
+    public static int MAP_Y = 0;
     
     public static int MOUSE_PRESSED_TYPE = 0;
     
@@ -354,6 +354,12 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        down = new javax.swing.JButton();
+        left = new javax.swing.JButton();
+        right = new javax.swing.JButton();
+        up = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         menubar = new javax.swing.JMenuBar();
         file = new javax.swing.JMenu();
         importmap = new javax.swing.JMenuItem();
@@ -376,7 +382,7 @@ public class BTME2UI extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(720, 540));
 
-        jPanel1.setBackground(new java.awt.Color(51, 0, 204));
+        jPanel1.setBackground(new java.awt.Color(0, 0, 153));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
         jPanel1.setCursor(amicursor);
         jPanel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
@@ -594,6 +600,7 @@ public class BTME2UI extends javax.swing.JFrame {
         jComboBox1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Black", "Red", "Orange", "Yellow", "Green", "Blue", "Violet" }));
         jComboBox1.setSelectedIndex(5);
+        jComboBox1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jComboBox1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jComboBox1.setRequestFocusEnabled(false);
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
@@ -603,26 +610,91 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 110, -1));
 
-        jLabel2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(153, 153, 255));
-        jLabel2.setText("Version 2.0.0 -NOMAD");
+        jLabel2.setText("Version 2.0.0 - NOMAD");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, -1, -1));
 
-        jLabel3.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Initialized");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 470, -1, -1));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, -1, -1));
 
-        jLabel4.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("BigBlueTermPlus Nerd Font", 0, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("B-TRON MAP EDITOR");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, -1, -1));
+
+        down.setBackground(new java.awt.Color(153, 153, 255));
+        down.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/down.png"))); // NOI18N
+        down.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        down.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        down.setMaximumSize(new java.awt.Dimension(32, 32));
+        down.setMinimumSize(new java.awt.Dimension(32, 32));
+        down.setPreferredSize(new java.awt.Dimension(32, 32));
+        down.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downActionPerformed(evt);
+            }
+        });
+        jPanel1.add(down, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 110, -1, -1));
+
+        left.setBackground(new java.awt.Color(153, 153, 255));
+        left.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/left.png"))); // NOI18N
+        left.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        left.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        left.setMaximumSize(new java.awt.Dimension(32, 32));
+        left.setMinimumSize(new java.awt.Dimension(32, 32));
+        left.setPreferredSize(new java.awt.Dimension(32, 32));
+        left.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                leftActionPerformed(evt);
+            }
+        });
+        jPanel1.add(left, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 440, -1, -1));
+
+        right.setBackground(new java.awt.Color(153, 153, 255));
+        right.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/right.png"))); // NOI18N
+        right.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        right.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        right.setMaximumSize(new java.awt.Dimension(32, 32));
+        right.setMinimumSize(new java.awt.Dimension(32, 32));
+        right.setPreferredSize(new java.awt.Dimension(32, 32));
+        right.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rightActionPerformed(evt);
+            }
+        });
+        jPanel1.add(right, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 440, -1, -1));
+
+        up.setBackground(new java.awt.Color(153, 153, 255));
+        up.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/up.png"))); // NOI18N
+        up.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        up.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        up.setMaximumSize(new java.awt.Dimension(32, 32));
+        up.setMinimumSize(new java.awt.Dimension(32, 32));
+        up.setPreferredSize(new java.awt.Dimension(32, 32));
+        up.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upActionPerformed(evt);
+            }
+        });
+        jPanel1.add(up, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 70, -1, -1));
+
+        jLabel6.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Y - 0");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, -1, -1));
+
+        jLabel5.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("X - 0");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
         menubar.setBackground(new java.awt.Color(102, 102, 255));
         menubar.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
         menubar.setName("Menu"); // NOI18N
 
-        file.setForeground(new java.awt.Color(0, 0, 102));
         file.setText("File");
         file.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         file.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
@@ -1137,6 +1209,26 @@ public class BTME2UI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_importmapActionPerformed
 
+    private void rightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightActionPerformed
+        MAP_X++;
+        jLabel5.setText("X - " + MAP_X);
+    }//GEN-LAST:event_rightActionPerformed
+
+    private void leftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leftActionPerformed
+        MAP_X--;
+        jLabel5.setText("X - " + MAP_X);
+    }//GEN-LAST:event_leftActionPerformed
+
+    private void upActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upActionPerformed
+        MAP_Y--;
+        jLabel6.setText("Y - " + MAP_Y);
+    }//GEN-LAST:event_upActionPerformed
+
+    private void downActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downActionPerformed
+        MAP_Y++;
+        jLabel6.setText("Y - " + MAP_Y);
+    }//GEN-LAST:event_downActionPerformed
+
     private boolean is_barrier_hitting_selection(BT_Barrier barr)
     {
         return (SELECT_BUFFER != null &&
@@ -1209,7 +1301,9 @@ public class BTME2UI extends javax.swing.JFrame {
                     case 3 -> {
                         if (MOUSE_IS_HELD)
                         {
+                            addundostate();
                             MAP_BARRIERS.remove(i);
+                            addundopost();
                         }
                         g.setColor(Color.LIGHT_GRAY);
                     }
@@ -1473,6 +1567,7 @@ public class BTME2UI extends javax.swing.JFrame {
     public static javax.swing.JToggleButton btn_stamp;
     private javax.swing.JToggleButton btn_vertline;
     public static javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JButton down;
     private javax.swing.JMenu edit;
     private javax.swing.JMenuItem exportmap;
     private javax.swing.JMenu file;
@@ -1482,14 +1577,19 @@ public class BTME2UI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private static javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JButton left;
     private javax.swing.JPanel map_view_panel;
     private javax.swing.JMenuBar menubar;
+    private javax.swing.JButton right;
     private javax.swing.JMenuItem undo;
+    private javax.swing.JButton up;
     // End of variables declaration//GEN-END:variables
 }
