@@ -135,7 +135,7 @@ public class BTME2UI extends javax.swing.JFrame {
         initComponents();
         
         // i forgot what this does
-        bi = new BufferedImage(480, 360, BufferedImage.TYPE_INT_RGB);
+        bi = new BufferedImage(24 * 480, 24 * 360, BufferedImage.TYPE_INT_RGB);
         g = bi.createGraphics();
         mvg = map_view_panel.getGraphics();
         
@@ -1380,7 +1380,7 @@ public class BTME2UI extends javax.swing.JFrame {
     private void clear_screen()
     {
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, 480, 360);
+        g.fillRect(MAP_X * 480, MAP_Y * 360, 480, 360);
         
         if (GRID_TOGGLE)
         {
@@ -1418,12 +1418,18 @@ public class BTME2UI extends javax.swing.JFrame {
         
         draw_viewer();
         Point thepoint = map_view_panel.getMousePosition();
+        
+        BufferedImage bi2 = new BufferedImage(480, 360, BufferedImage.TYPE_INT_RGB);
+        bi2 = bi.getSubimage(MAP_X * 480, MAP_Y * 360, 480, 360);
+        
         if (thepoint == null)
         {
-            mvg.drawImage(bi, 0, 0, this);
+            mvg.drawImage(bi2, 0, 0, this);
             return;
         }
         mousePosition = thepoint;
+        mousePosition.x = mousePosition.x + (MAP_X * 480);
+        mousePosition.y = mousePosition.y + (MAP_Y * 360);
         
         g.setColor(COLORLIST[CURRENT_COLOR]);
         switch (CURRENT_MODE)
@@ -1516,8 +1522,9 @@ public class BTME2UI extends javax.swing.JFrame {
             }
             
         }
+       
+        mvg.drawImage(bi2, 0, 0, this);
         
-        mvg.drawImage(bi, 0, 0, this);
     }
     
     /**
