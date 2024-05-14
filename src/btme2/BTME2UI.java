@@ -99,11 +99,20 @@ public class BTME2UI extends javax.swing.JFrame {
     public int undoIndex = 0;
     public int lastTimeTravel = 2; //0-Undo, 1-Redo, 2-None
     
+    Font terminal;
+    
     /**
      * Creates new form BTME2UI
      */
     public BTME2UI() {
         // SET THE THEME
+        try {
+        terminal = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/btme2/terminal.ttf").getPath()));
+        }
+        catch (FontFormatException | IOException e)
+        {
+            System.out.println(e);
+        }
         try {
                 // Set cross-platform Java L&F (also called "Metal")
             UIManager.setLookAndFeel ("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
@@ -131,6 +140,8 @@ public class BTME2UI extends javax.swing.JFrame {
          UIManager.put("ToggleButton.select", new Color(67, 52, 163));
          UIManager.put("Button.select", new Color(67, 52, 163));
         
+        UIManager.getLookAndFeelDefaults()
+        .put("defaultFont", terminal.deriveFont(12f));
         // netbeans sstuff
         initComponents();
         
@@ -591,13 +602,13 @@ public class BTME2UI extends javax.swing.JFrame {
 
         jPanel1.add(map_view_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 70, -1, -1));
 
-        jLabel1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel1.setFont(terminal.deriveFont(12f));
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Border Color");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 440, 110, -1));
 
-        jComboBox1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jComboBox1.setFont(terminal.deriveFont(12f));
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Black", "Red", "Orange", "Yellow", "Green", "Blue", "Violet" }));
         jComboBox1.setSelectedIndex(5);
         jComboBox1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -610,20 +621,21 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 110, -1));
 
-        jLabel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel2.setFont(terminal.deriveFont(12f)
+        );
         jLabel2.setForeground(new java.awt.Color(153, 153, 255));
         jLabel2.setText("Version 2.0.0 - NOMAD");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, -1, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, 180, -1));
 
-        jLabel3.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
+        jLabel3.setFont(terminal.deriveFont(12f));
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Initialized");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, -1, -1));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 330, -1));
 
-        jLabel4.setFont(new java.awt.Font("BigBlueTermPlus Nerd Font", 0, 12)); // NOI18N
+        jLabel4.setFont(terminal.deriveFont(12f));
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("B-TRON MAP EDITOR");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, -1, -1));
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, 170, -1));
 
         down.setBackground(new java.awt.Color(153, 153, 255));
         down.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/down.png"))); // NOI18N
@@ -681,12 +693,12 @@ public class BTME2UI extends javax.swing.JFrame {
         });
         jPanel1.add(up, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 70, -1, -1));
 
-        jLabel6.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel6.setFont(terminal.deriveFont(12f));
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Y - 0");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, -1, -1));
 
-        jLabel5.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel5.setFont(terminal.deriveFont(12f));
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("X - 0");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
@@ -697,11 +709,11 @@ public class BTME2UI extends javax.swing.JFrame {
 
         file.setText("File");
         file.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        file.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        file.setFont(terminal.deriveFont(12f));
 
         importmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        importmap.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
-        importmap.setText("<HTML><U>I</U>mport Map</HTML>");
+        importmap.setFont(terminal.deriveFont(12f));
+        importmap.setText("Import Map");
         importmap.setToolTipText("");
         importmap.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -711,8 +723,8 @@ public class BTME2UI extends javax.swing.JFrame {
         file.add(importmap);
 
         exportmap.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        exportmap.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
-        exportmap.setText("<HTML><U>E</U>xport Map</HTML>");
+        exportmap.setFont(terminal.deriveFont(12f));
+        exportmap.setText("Export Map");
         exportmap.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportmapActionPerformed(evt);
@@ -721,7 +733,7 @@ public class BTME2UI extends javax.swing.JFrame {
         file.add(exportmap);
 
         jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-        jMenuItem4.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jMenuItem4.setFont(terminal.deriveFont(12f));
         jMenuItem4.setText("About");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -735,10 +747,11 @@ public class BTME2UI extends javax.swing.JFrame {
         edit.setForeground(new java.awt.Color(0, 0, 102));
         edit.setText("Edit");
         edit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        edit.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        edit.setFont(terminal.deriveFont(12f));
 
         undo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        undo.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        undo.setFont(terminal.deriveFont(12f)
+        );
         undo.setToolTipText("Undo");
         undo.setEnabled(false);
         undo.setLabel("Undo");
@@ -750,7 +763,8 @@ public class BTME2UI extends javax.swing.JFrame {
         edit.add(undo);
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jMenuItem1.setFont(terminal.deriveFont(12f)
+        );
         jMenuItem1.setText("Redo");
         jMenuItem1.setEnabled(false);
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -765,10 +779,10 @@ public class BTME2UI extends javax.swing.JFrame {
         jMenu1.setForeground(new java.awt.Color(0, 0, 102));
         jMenu1.setText("View");
         jMenu1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jMenu1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jMenu1.setFont(terminal.deriveFont(12f));
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jMenuItem2.setFont(terminal.deriveFont(12f));
         jMenuItem2.setText("Toggle Grid");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

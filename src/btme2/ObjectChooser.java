@@ -24,9 +24,13 @@
 package btme2;
 
 import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import javax.swing.ImageIcon;
@@ -43,8 +47,16 @@ public class ObjectChooser extends javax.swing.JFrame {
     
     Image cursorimg;
     Cursor amicursor;
+    Font terminal;
     
     public ObjectChooser() {
+        try {
+        terminal = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/btme2/terminal.ttf").getPath()));
+        }
+        catch (FontFormatException | IOException e)
+        {
+            System.out.println(e);
+        }
         initComponents();
         
         Image iconimg;
@@ -84,7 +96,7 @@ public class ObjectChooser extends javax.swing.JFrame {
         setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         setResizable(false);
 
-        jList1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jList1.setFont(terminal.deriveFont(12f));
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "PLAYER", "CAMERA", "VERTICAL DOOR", "HORIZONTAL DOOR", "KEY" };
             public int getSize() { return strings.length; }
@@ -108,7 +120,7 @@ public class ObjectChooser extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jList1);
 
-        jList2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jList2.setFont(terminal.deriveFont(12f));
         jList2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jList2.setToolTipText("");
         jList2.setMaximumSize(new java.awt.Dimension(132, 70));
@@ -116,7 +128,7 @@ public class ObjectChooser extends javax.swing.JFrame {
         jList2.setPreferredSize(new java.awt.Dimension(132, 70));
         jScrollPane2.setViewportView(jList2);
 
-        jButton1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jButton1.setFont(terminal.deriveFont(12f));
         jButton1.setText("Ok");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -124,7 +136,7 @@ public class ObjectChooser extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jButton2.setFont(terminal.deriveFont(12f));
         jButton2.setText("Cancel");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -132,10 +144,10 @@ public class ObjectChooser extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel1.setFont(terminal.deriveFont(12f));
         jLabel1.setText("Choose an Object");
 
-        jLabel2.setFont(new java.awt.Font("BigBlue Terminal 437TT", 0, 12)); // NOI18N
+        jLabel2.setFont(terminal.deriveFont(12f));
         jLabel2.setText("Choose a Value");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -173,7 +185,7 @@ public class ObjectChooser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)

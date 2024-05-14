@@ -24,9 +24,13 @@
 package btme2;
 
 import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.ImageIcon;
 
 /**
@@ -41,10 +45,17 @@ public class NameEntry extends javax.swing.JFrame {
     
     Image cursorimg;
     Cursor amicursor;
+    Font terminal;
     
     public NameEntry() {
+        try {
+        terminal = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/btme2/terminal.ttf").getPath()));
+        }
+        catch (FontFormatException | IOException e)
+        {
+            System.out.println(e);
+        }
         initComponents();
-        
         mapnameentry.setText(BTME2UI.MAP_NAME);
                 
         Image iconimg;
@@ -80,7 +91,7 @@ public class NameEntry extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(400, 101));
         setResizable(false);
 
-        mapnameentry.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        mapnameentry.setFont(terminal.deriveFont(12f));
         mapnameentry.setText("Plaguedoc is a poopoo fart");
         mapnameentry.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         mapnameentry.addActionListener(new java.awt.event.ActionListener() {
@@ -97,7 +108,7 @@ public class NameEntry extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jButton1.setFont(terminal.deriveFont(12f));
         jButton1.setText("Yes!");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -105,7 +116,7 @@ public class NameEntry extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jButton2.setFont(terminal.deriveFont(12f));
         jButton2.setText("Nevermind");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -113,7 +124,7 @@ public class NameEntry extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jLabel1.setFont(terminal.deriveFont(12f));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Enter Map Name");
 
@@ -144,7 +155,7 @@ public class NameEntry extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         pack();

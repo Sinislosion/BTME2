@@ -2,11 +2,15 @@ package btme2;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
@@ -34,8 +38,17 @@ public class BTME2_About extends javax.swing.JFrame {
     
     LinkedList<ABOUT_STARS> STAR_LIST = new LinkedList();
     
+    Font terminal;
+    
     /** Creates new form BTME2_About */
     public BTME2_About() {
+        try {
+        terminal = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/btme2/terminal.ttf").getPath()));
+        }
+        catch (FontFormatException | IOException e)
+        {
+            System.out.println(e);
+        }
         initComponents();
         
         Image iconimg;
@@ -108,7 +121,7 @@ public class BTME2_About extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(460, 260));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButton1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jButton1.setFont(terminal.deriveFont(12f));
         jButton1.setText("Alright!");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -138,7 +151,7 @@ public class BTME2_About extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
