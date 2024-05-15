@@ -75,7 +75,9 @@ public class BTME2UI extends javax.swing.JFrame {
     BufferedImage bi;
     
     Cursor amicursor;
+    Cursor amicursor_hand;
     Image cursorimg;
+    Image cursorimg_hand;
     
     JFrame choose;
     JFrame about;
@@ -213,6 +215,8 @@ public class BTME2UI extends javax.swing.JFrame {
         // set the cursor
         cursorimg = new ImageIcon(this.getClass().getResource("/cursor.png")).getImage();
         amicursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorimg, new Point(0,0), "Amiga");
+        cursorimg_hand = new ImageIcon(this.getClass().getResource("/handy.png")).getImage();
+        amicursor_hand = Toolkit.getDefaultToolkit().createCustomCursor(cursorimg_hand, new Point(0,0), "AmigaHandy");
         setCursor(amicursor);
         
         // set popup windows
@@ -395,7 +399,6 @@ public class BTME2UI extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 153));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
-        jPanel1.setCursor(amicursor);
         jPanel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
         jPanel1.setMaximumSize(new java.awt.Dimension(720, 540));
         jPanel1.setMinimumSize(new java.awt.Dimension(720, 540));
@@ -413,20 +416,34 @@ public class BTME2UI extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Mono", 0, 12)); // NOI18N
+        jPanel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jPanel2MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jPanel2MouseExited(evt);
+            }
+        });
         jPanel2.setLayout(new java.awt.GridLayout(1, 1));
 
         btn_select.setBackground(new java.awt.Color(153, 153, 255));
         buttonGroup2.add(btn_select);
         btn_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/select.png"))); // NOI18N
         btn_select.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btn_select.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_select.setFocusPainted(false);
+        btn_select.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn_select.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_select.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_select.setPreferredSize(new java.awt.Dimension(32, 32));
         btn_select.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btn_selectMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_selectMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn_selectMouseExited(evt);
             }
         });
         jPanel2.add(btn_select);
@@ -435,12 +452,20 @@ public class BTME2UI extends javax.swing.JFrame {
         btn_objects.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/objects.png"))); // NOI18N
         btn_objects.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonGroup2.add(btn_objects);
-        btn_objects.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_objects.setDefaultCapable(false);
         btn_objects.setFocusPainted(false);
         btn_objects.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn_objects.setMaximumSize(new java.awt.Dimension(32, 32));
         btn_objects.setMinimumSize(new java.awt.Dimension(32, 32));
         btn_objects.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn_objects.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_objectsMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn_objectsMouseExited(evt);
+            }
+        });
         btn_objects.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_objectsActionPerformed(evt);
@@ -452,8 +477,15 @@ public class BTME2UI extends javax.swing.JFrame {
         buttonGroup2.add(btn_pencil);
         btn_pencil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/penis.png"))); // NOI18N
         btn_pencil.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        btn_pencil.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_pencil.setFocusPainted(false);
+        btn_pencil.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_pencilMouseEntered(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                btn_pencilMousePressed(evt);
+            }
+        });
         btn_pencil.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_pencilActionPerformed(evt);
@@ -465,8 +497,15 @@ public class BTME2UI extends javax.swing.JFrame {
         buttonGroup2.add(btn_delete);
         btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/delete.png"))); // NOI18N
         btn_delete.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btn_delete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_delete.setFocusPainted(false);
+        btn_delete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn_deleteMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn_deleteMouseExited(evt);
+            }
+        });
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_deleteActionPerformed(evt);
@@ -682,6 +721,7 @@ public class BTME2UI extends javax.swing.JFrame {
         up.setBackground(new java.awt.Color(153, 153, 255));
         up.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btme2/up.png"))); // NOI18N
         up.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        up.setCursor(amicursor_hand);
         up.setMargin(new java.awt.Insets(0, 0, 0, 0));
         up.setMaximumSize(new java.awt.Dimension(32, 32));
         up.setMinimumSize(new java.awt.Dimension(32, 32));
@@ -703,7 +743,7 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel5.setText("X - 8");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
-        menubar.setBackground(new java.awt.Color(102, 102, 255));
+        menubar.setBorder(null);
         menubar.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font Propo", 0, 12)); // NOI18N
         menubar.setName("Menu"); // NOI18N
 
@@ -917,6 +957,7 @@ public class BTME2UI extends javax.swing.JFrame {
         hori_wall_buffer = null;
         MOVE_BUFFER = null;
         MOUSE_IS_HELD = false;
+        setCursor(amicursor);
     }//GEN-LAST:event_map_view_panelMouseExited
 
     private void map_view_panelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_map_view_panelMouseEntered
@@ -928,7 +969,7 @@ public class BTME2UI extends javax.swing.JFrame {
             }
             
             default -> {
-            map_view_panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                setCursor(amicursor_hand);
             }
         }
     }//GEN-LAST:event_map_view_panelMouseEntered
@@ -1255,6 +1296,46 @@ public class BTME2UI extends javax.swing.JFrame {
         jLabel6.setText("Y - " + MAP_Y);
     }//GEN-LAST:event_downActionPerformed
 
+    private void btn_selectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selectMouseEntered
+        setCursor(amicursor_hand);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_selectMouseEntered
+
+    private void btn_objectsMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_objectsMouseEntered
+        setCursor(amicursor_hand);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_objectsMouseEntered
+
+    private void jPanel2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseEntered
+
+    }//GEN-LAST:event_jPanel2MouseEntered
+
+    private void jPanel2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseExited
+
+    }//GEN-LAST:event_jPanel2MouseExited
+
+    private void btn_selectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selectMouseExited
+        setCursor(amicursor);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_selectMouseExited
+
+    private void btn_objectsMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_objectsMouseExited
+        setCursor(amicursor);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_objectsMouseExited
+
+    private void btn_pencilMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_pencilMouseEntered
+        setCursor(amicursor);
+    }//GEN-LAST:event_btn_pencilMouseEntered
+
+    private void btn_pencilMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_pencilMousePressed
+        setCursor(amicursor);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_pencilMousePressed
+
+    private void btn_deleteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_deleteMouseEntered
+        setCursor(amicursor_hand);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_deleteMouseEntered
+
+    private void btn_deleteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_deleteMouseExited
+        setCursor(amicursor);        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_deleteMouseExited
+
     private boolean is_barrier_hitting_selection(BT_Barrier barr)
     {
         return (SELECT_BUFFER != null &&
@@ -1415,11 +1496,11 @@ public class BTME2UI extends javax.swing.JFrame {
             {
                 switch (x)
                 {
-                    default -> g.drawLine(x * 8, 0, x * 8, 360);
+                    default -> g.drawLine(x * 8 + (480 * MAP_X), 0 + (360 * MAP_Y), x * 8 + (480 * MAP_X), 360 + (360 * MAP_Y));
                     
                     case 30 -> {
                         g.setColor(new Color(120, 120, 120));
-                        g.drawLine(x * 8, 0, x * 8, 360);
+                        g.drawLine(x * 8 + (480 * MAP_X), 0 + (360 * MAP_Y), x * 8 + (480 * MAP_X), 360 + (360 * MAP_Y));
                         g.setColor(new Color(80, 80, 80));
                     }
                 }
@@ -1430,11 +1511,11 @@ public class BTME2UI extends javax.swing.JFrame {
             {
                 switch (y)
                 {
-                    default -> g.drawLine(0, y * 8, 480, y * 8);
+                    default ->  g.drawLine(0 + (480 * MAP_X), y * 8 + (360 * MAP_Y), 480 + (480 * MAP_X), y * 8 + (360 * MAP_Y));
                     
                     case 22 -> {
                         g.setColor(new Color(120, 120, 120));
-                        g.drawLine(0, y * 8, 480, y * 8);
+                        g.drawLine(0 + (480 * MAP_X), y * 8 + (360 * MAP_Y), 480 + (480 * MAP_X), y * 8 + (360 * MAP_Y));
                         g.setColor(new Color(80, 80, 80));
                     }
                 }
